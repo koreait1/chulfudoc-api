@@ -1,0 +1,77 @@
+package org.backend.chulfudoc.member.controllers;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.backend.chulfudoc.global.exceptions.BadRequestException;
+import org.backend.chulfudoc.global.libs.Utils;
+import org.backend.chulfudoc.member.jwt.TokenService;
+import org.backend.chulfudoc.member.services.JoinService;
+import org.backend.chulfudoc.member.validators.JoinValidator;
+import org.backend.chulfudoc.member.validators.TokenValidator;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/member")
+@Tag(name="회원 API", description = "회원 가입, 인증 토큰 발급 기능 제공")
+public class MemberController {
+
+    private final JoinValidator joinValidator;
+    private final JoinService joinService;
+
+    private final TokenValidator tokenValidator;
+    private final TokenService tokenService;
+
+    private final Utils utils;
+
+    @Operation(summary = "회원가입처리", method = "POST")
+    @ApiResponse(responseCode = "201", description = "회원가입 성공시 201로 응답, 검증 실패시 400")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED) // 201로 응답
+    public void join(@Valid @RequestBody RequestJoin form, Errors errors) {
+
+        joinValidator.validate(form, errors);
+
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+
+        joinService.process(form);
+    }
+
+    /**
+     * 회원 계정(이메일, 비밀번호)으로 JWT 토큰 발급
+     *
+     * @return
+     */
+    @PostMapping("/token")
+    public String token(@Valid @RequestBody RequestToken form, Errors errors) {
+
+        tokenValidator.validate(form, errors);
+
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+
+        return tokenService.create(form.getEmail());
+    }
+
+    @PreAuthorize("isAuthenticated()") // 로그인시에만 접근 가능
+    @GetMapping("/test1")
+    public void test1() {
+        System.out.println("로그인시 접근 가능 - test1()");
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @GetMapping("/test2")
+    public void test2() {
+        System.out.println("관리자만 접근 가능 - test2()");
+    }
+
+}
