@@ -1,7 +1,11 @@
 package org.backend.chulfudoc.member.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.backend.chulfudoc.member.constants.Authority;
+import org.backend.chulfudoc.member.entities.Member;
+import org.backend.chulfudoc.member.libs.MemberUtil;
 import org.backend.chulfudoc.member.services.JoinService;
+import org.backend.chulfudoc.member.test.libs.MockMember;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,9 @@ public class MemberControllerTest {
 
     @Autowired
     private ObjectMapper om;
+
+    @Autowired
+    private MemberUtil memberUtil;
 
     @Autowired
     private JoinService joinService;
@@ -81,6 +88,13 @@ public class MemberControllerTest {
                         .header("Authorization", "Bearer " + token))
                 .andDo(print());
 
+    }
+
+    @Test
+    @MockMember(authority = Authority.ADMIN)
+    void mockMemberTest() {
+        Member member = memberUtil.getMember();
+        System.out.printf("member:%s, isLogin:%s, isAdmin:%s%n", member, memberUtil.isLogin(), member.isAdmin());
     }
 
 }
