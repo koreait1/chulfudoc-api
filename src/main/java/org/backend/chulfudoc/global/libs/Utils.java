@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class Utils {
 
-    private final MessageSource messageSource;
     private final HttpServletRequest request;
+    private final MessageSource messageSource;
     private final LocaleResolver localeResolver;
 
     /**
@@ -72,6 +72,20 @@ public class Utils {
         }
 
         return messages;
+    }
+
+    /**
+     * 전체 주소 : https://site123.com:3000/member/....
+     * @param url
+     * @return
+     */
+    public String getUrl(String url) {
+        String protocol = request.getScheme(); // http, https,ftp ....
+        String domain = request.getServerName();
+        int _port = request.getServerPort();
+        String port = List.of(80, 443).contains(_port) ? "":":"+_port;
+
+        return String.format("%s://%s%s%s%s", protocol, domain, port, request.getContextPath(), url);
     }
 
 }
