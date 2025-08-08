@@ -44,4 +44,9 @@ public class Member extends BaseEntity implements Serializable {
     private LocalDateTime expired; // 계정 만료 일자, null이면 만료 X
 
     private LocalDateTime credentialChangedAt; // 비밀번호 변경 일시
+
+    public boolean isAdmin() {
+        return authority != null && authority == Authority.ADMIN;
+    }
+
 }
