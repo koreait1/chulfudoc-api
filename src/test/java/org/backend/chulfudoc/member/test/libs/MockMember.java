@@ -20,4 +20,5 @@ public @interface MockMember {
     String mobile() default "01010001000";
     Authority authority() default Authority.MEMBER;
 
+
 }
