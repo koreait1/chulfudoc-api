@@ -50,7 +50,7 @@ public class FileInfo extends BaseEntity {
     private String thumbBaseUrl;
 
     @Transient
-    private String thumbBasePath;
+    private String fileDownloadUrl; // 다운로드 URL
 
     @Transient
     private boolean image;

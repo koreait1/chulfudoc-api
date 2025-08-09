@@ -23,10 +23,10 @@ import java.util.*;
 @EnableConfigurationProperties(FileProperties.class)
 public class FileUploadService {
 
-    private final FileProperties properties;
+    private final FileProperties fileProperties;
     private final FileInfoRepository repository;
-    private final FileInfoService infoService;
-    private final FileDeleteService deleteService;
+    private final FileInfoService fileInfoService;
+    private final FileDeleteService fileDeleteService;
 
     public List<FileInfo> process(RequestUpload form) {
         String gid = form.getGid(); // 그룹 ID
@@ -43,7 +43,7 @@ public class FileUploadService {
         // 하나의 파일만 업로드 하는 경우
         if (single) {
             // 기존 업로드된 파일 삭제
-            deleteService.process(gid, location);
+            fileDeleteService.process(gid, location);
 
             files = new MultipartFile[] { files[0] };
         }
@@ -53,7 +53,7 @@ public class FileUploadService {
             files = Arrays.stream(files).filter(file -> file.getContentType() != null && file.getContentType().startsWith("image/")).toArray(MultipartFile[]::new);
         }
 
-        String basePath = properties.getPath(); // 파일 업로드 기본 경로
+        String basePath = fileProperties.getPath(); // 파일 업로드 기본 경로
 
         List<FileInfo> uploadedFiles = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -88,7 +88,7 @@ public class FileUploadService {
             File uploadPath = new File(_uploadDir, _fileName);
             try {
                 file.transferTo(uploadPath);
-                infoService.addInfo(item);
+                fileInfoService.addInfo(item);
                 uploadedFiles.add(item);
             } catch (IOException e) {
                 // 업로드 실패시 저장된 DB 데이터 삭제
@@ -108,7 +108,7 @@ public class FileUploadService {
      * @param gid
      */
     public void processDone(String gid) {
-        List<FileInfo> items = infoService.getList(gid, null, FileStatus.ALL);
+        List<FileInfo> items = fileInfoService.getList(gid, null, FileStatus.ALL);
 
         items.forEach(item -> item.setDone(true));
 
