@@ -97,8 +97,12 @@ public class FileInfoService {
 
         /* 이미지인 경우 썸네일 기본 URL, 기본 Path  추가 */
         if (item.isImage()) {
-            item.setThumbBaseUrl(utils.getUrl("/file/thumb?seq="+item.getSeq()));
+
+            item.setThumbBaseUrl(utils.getUrl("/file/thumb?seq=" + item.getSeq()));
         }
+
+        // 파일 다운로드 URL
+        item.setFileDownloadUrl(utils.getUrl("/file/download/" + item.getSeq()));
     }
 
     public String folder(FileInfo item) {
@@ -120,5 +124,4 @@ public class FileInfoService {
     public String getFilePath(FileInfo item) {
         return String.format("%s/%s/%s", fileProperties.getPath(), folder(item), item.getSeq() + Objects.requireNonNullElse(item.getExtension(), ""));
     }
-
 }

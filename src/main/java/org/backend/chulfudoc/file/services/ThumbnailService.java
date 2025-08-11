@@ -19,8 +19,8 @@ import java.util.Objects;
 @EnableConfigurationProperties(FileProperties.class)
 public class ThumbnailService {
 
-    private final FileInfoService infoService;
-    private final FileProperties properties;
+    private final FileInfoService fileInfoService;
+    private final FileProperties fileProperties;
 
     public String create(RequestThumb form) {
         Long seq = form.getSeq();
@@ -38,7 +38,7 @@ public class ThumbnailService {
         // 썸네일 생성
         try {
             if (seq != null && seq > 0L) { // 파일 등록번호 기준에서 썸네일 생성
-                FileInfo item = infoService.get(seq);
+                FileInfo item = fileInfoService.get(seq);
                 Thumbnails.Builder<File> builder = Thumbnails.of(item.getFilePath())
                         .size(width, height);
                 if (crop) { // 크롭 모드
@@ -58,12 +58,12 @@ public class ThumbnailService {
     }
 
     public String getThumbPath(Long seq, int width, int height, boolean crop) {
-        String basePath = properties.getPath() + "/thumbs";
+        String basePath = fileProperties.getPath() + "/thumbs";
 
         String thumbPath = "";
         if (seq != null && seq > 0L) { // 직접 업로드한 파일 기준
-            FileInfo item = infoService.get(seq);
-            String folder = infoService.folder(seq);
+            FileInfo item = fileInfoService.get(seq);
+            String folder = fileInfoService.folder(seq);
             File file = new File(basePath + "/" + folder);
             if (!file.exists() || !file.isDirectory()) {
                 file.mkdirs();
@@ -74,7 +74,7 @@ public class ThumbnailService {
         }
 
         return thumbPath;
-    }
 
+    }
 
 }
