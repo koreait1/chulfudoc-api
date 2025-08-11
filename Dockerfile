@@ -1,6 +1,6 @@
 FROM openjdk:21-jdk
 ARG JAR_PATH=build/libs/chulfudoc-0.0.1-SNAPSHOT.jar
-ARG PORT=5000
+ARG PORT=4000
 COPY ${JAR_PATH} app.jar
 RUN mkdir uploads
 

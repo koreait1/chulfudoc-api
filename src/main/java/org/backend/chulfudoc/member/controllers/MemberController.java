@@ -94,7 +94,7 @@ public class MemberController {
      */
     @Operation(summary = "로그인 상태인 회원 정보를 조회", method = "GET")
     @ApiResponse(responseCode = "200")
-    @GetMapping // GET /api/v1/member
+    @GetMapping // GET /api/v1/memberg
     @PreAuthorize("isAuthenticated()")
     public Member myInfo() {
         return memberUtil.getMember();
