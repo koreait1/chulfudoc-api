@@ -1,14 +1,22 @@
 package org.backend.chulfudoc.member.libs;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.member.MemberInfo;
 import org.backend.chulfudoc.member.constants.Authority;
 import org.backend.chulfudoc.member.entities.Member;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.Objects;
+import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class MemberUtil {
+    private final HttpServletRequest request;
 
     public boolean isLogin() {
         return getMember() != null;
@@ -27,4 +35,16 @@ public class MemberUtil {
         return null;
     }
 
+    /**
+     * 회원 구분 해시
+     *  비회원 : 요청헤더 - User-Hash가 있으면 그걸로 대체
+     *  회원 : 회원 번호
+     * @return
+     */
+    public int getUserHash() {
+        String userHash = request.getHeader("User-Hash");
+        userHash = StringUtils.hasText(userHash) ? userHash : UUID.randomUUID().toString();
+
+        return isLogin() ? Objects.hash(getMember().getSeq()) : Objects.hash(userHash);
+    }
 }
