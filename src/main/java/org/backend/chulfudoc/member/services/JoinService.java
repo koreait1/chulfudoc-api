@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class JoinService {
+
     private final MemberRepository repository;
     private final PasswordEncoder encoder;
     private final ModelMapper mapper;
@@ -34,4 +35,5 @@ public class JoinService {
 
         repository.saveAndFlush(member);
     }
+
 }
