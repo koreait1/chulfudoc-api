@@ -30,13 +30,13 @@ public class TokenValidator implements Validator {
         RequestToken form = (RequestToken) target;
         Member member = repository.findByEmail(form.getEmail()).orElse(null);
         if (member == null) {
-            errors.reject("NotFound.member.or.password");
+            errors.reject("NotFound.login.member");
 
         }
 
         // 비밀번호 검증
         if (member != null && !passwordEncoder.matches(form.getPassword(), member.getPassword())) {
-            errors.reject("NotFound.member.or.password");
+            errors.reject("NotFound.login.password");
         }
     }
 }
