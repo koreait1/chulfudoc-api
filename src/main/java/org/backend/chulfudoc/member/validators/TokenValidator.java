@@ -35,7 +35,7 @@ public class TokenValidator implements Validator {
         }
 
         // 비밀번호 검증
-        if (!passwordEncoder.matches(form.getPassword(), member.getPassword())) {
+        if (member != null && !passwordEncoder.matches(form.getPassword(), member.getPassword())) {
             errors.reject("NotFound.member.or.password");
         }
     }
