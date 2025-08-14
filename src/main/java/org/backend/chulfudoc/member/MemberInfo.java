@@ -29,7 +29,7 @@ public class MemberInfo implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member == null ? null : member.getEmail();
+        return member == null ? null : member.getUserId();
     }
 
     @Override

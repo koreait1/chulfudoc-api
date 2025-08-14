@@ -70,7 +70,7 @@ public class MemberController {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
 
-        return tokenService.create(form.getEmail());
+        return tokenService.create(form.getUserId());
     }
 
 //    @PreAuthorize("isAuthenticated()") // 로그인시에만 접근 가능

@@ -7,7 +7,7 @@ import lombok.Data;
 public class RequestToken {
 
     @NotBlank
-    private String email;
+    private String userId;
 
     @NotBlank
     private String password;

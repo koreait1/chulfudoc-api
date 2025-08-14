@@ -49,18 +49,18 @@ public class TokenService {
     /**
      * JWT 토큰 발급
      *
-     * @param email
+     * @param userId
      * @return
      */
-    public String create(String email) {
+    public String create(String userId) {
 
-        MemberInfo userDetails = (MemberInfo)infoService.loadUserByUsername(email);
+        MemberInfo userDetails = (MemberInfo)infoService.loadUserByUsername(userId);
         Member member = userDetails.getMember();
 
         Date date = new Date(new Date().getTime() + properties.getValidTime() * 1000);
 
         return Jwts.builder()
-                .setSubject(member.getEmail())
+                .setSubject(member.getUserId())
                 .claim("authority", member.getAuthority())
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(date)

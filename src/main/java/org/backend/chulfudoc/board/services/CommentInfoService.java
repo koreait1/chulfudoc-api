@@ -94,7 +94,7 @@ public class CommentInfoService {
             item.setMine(session.get("comment_seq_" + item.getSeq()) != null); // 비회원 인증 여부
             guest = true;
         } else { // 회원이 작성한 댓글
-            item.setMine(memberUtil.isLogin() && member.getSeq().equals(commentMember.getSeq()));
+            item.setMine(memberUtil.isLogin() && member.getPUUID().equals(commentMember.getPUUID()));
             if (!memberUtil.isAdmin()) {
                 editable = item.isMine();
             }

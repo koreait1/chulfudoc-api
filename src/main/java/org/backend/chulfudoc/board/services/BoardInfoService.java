@@ -257,7 +257,7 @@ public class BoardInfoService {
         } else { // 회원 게시글
             Member boardMember = item.getMember(); // 게시글을 작성한 회원
             Member member = memberUtil.getMember(); // 로그인한 회원
-            item.setMine(memberUtil.isLogin() && boardMember.getSeq().equals(member.getSeq())); // 로그인한 회원 정보와 게시글 작성 회원 정보가 일치
+            item.setMine(memberUtil.isLogin() && boardMember.getPUUID().equals(member.getPUUID())); // 로그인한 회원 정보와 게시글 작성 회원 정보가 일치
             if (!memberUtil.isAdmin()) {
                 editable = item.isMine();
             }

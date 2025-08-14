@@ -42,6 +42,7 @@ public class MemberControllerTest {
     void joinTest() throws Exception {
 
         RequestJoin form = new RequestJoin();
+        form.setUserId("user01");
         form.setEmail("user01@test.org");
         form.setPassword("!aA123456");
         form.setConfirmPassword(form.getPassword());
@@ -72,7 +73,7 @@ public class MemberControllerTest {
         joinService.process(form);
 
         RequestToken form2 = new RequestToken();
-        form2.setEmail("user01@test.org");
+        form2.setUserId("user01");
         form2.setPassword("!aA123456");
         String body = om.writeValueAsString(form2);
 

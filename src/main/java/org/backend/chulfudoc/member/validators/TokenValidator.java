@@ -28,7 +28,7 @@ public class TokenValidator implements Validator {
         }
 
         RequestToken form = (RequestToken) target;
-        Member member = repository.findByEmail(form.getEmail()).orElse(null);
+        Member member = repository.findByUserId(form.getUserId()).orElse(null);
 
         if (member == null) {
             errors.reject("NotFound.member.or.password");

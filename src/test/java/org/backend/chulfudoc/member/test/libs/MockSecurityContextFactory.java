@@ -16,7 +16,8 @@ public class MockSecurityContextFactory implements WithSecurityContextFactory<Mo
     public SecurityContext createSecurityContext(MockMember annotation) {
 
         Member member = new Member();
-        member.setSeq(annotation.seq());
+        member.setPUUID(annotation.PUUID());
+        member.setUserId(annotation.userID());
         member.setEmail(annotation.email());
         member.setPassword(annotation.password());
         member.setName(annotation.name());

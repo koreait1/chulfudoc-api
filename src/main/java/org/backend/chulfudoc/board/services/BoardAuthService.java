@@ -87,7 +87,7 @@ public class BoardAuthService {
                 }
             } else { // 회원 게시글
                 Member boardMember = item.getMember();
-                if (!memberUtil.isLogin() || !boardMember.getSeq().equals(memberUtil.getMember().getSeq())) { // 직접 작성한 게시글이 아닌 경우
+                if (!memberUtil.isLogin() || !boardMember.getPUUID().equals(memberUtil.getMember().getPUUID())) { // 직접 작성한 게시글이 아닌 경우
                     throw new UnAuthorizedException();
                 }
             }
@@ -103,7 +103,7 @@ public class BoardAuthService {
                 }
             } else { // 회원 댓글
                 Member commentMember = comment.getMember();
-                if (!memberUtil.isLogin() || !commentMember.getSeq().equals(memberUtil.getMember().getSeq())) { // 직접 작성한 게시글이 아닌 경우
+                if (!memberUtil.isLogin() || !commentMember.getPUUID().equals(memberUtil.getMember().getPUUID())) { // 직접 작성한 게시글이 아닌 경우
                     throw new UnAuthorizedException();
                 }
             }
