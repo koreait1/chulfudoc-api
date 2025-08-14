@@ -14,7 +14,7 @@ import org.springframework.validation.Validator;
 public class TokenValidator implements Validator {
 
     private final MemberRepository repository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder encoder;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -29,14 +29,16 @@ public class TokenValidator implements Validator {
 
         RequestToken form = (RequestToken) target;
         Member member = repository.findByEmail(form.getEmail()).orElse(null);
-        if (member == null) {
-            errors.reject("NotFound.login.member");
 
+        if (member == null) {
+            errors.reject("NotFound.member.or.password");
         }
 
         // 비밀번호 검증
-        if (member != null && !passwordEncoder.matches(form.getPassword(), member.getPassword())) {
-            errors.reject("NotFound.login.password");
+
+        if (member != null && !encoder.matches(form.getPassword(), member.getPassword())) {
+            errors.reject("NotFound.member.or.password");
+
         }
     }
 }
