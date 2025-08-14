@@ -37,11 +37,15 @@ public class JoinValidator implements Validator, PasswordValidator, MobileValida
 
         RequestJoin form = (RequestJoin) target;
 
-        // 1. 이메일 중복 여부
+        // 1. 아이디 중복 여부
+        if (repository.existsByUserId(form.getUserId())) {
+            errors.rejectValue("userId", "Duplicated");
+        }
+
+        // 2. 이메일 중복 여부
         if (repository.existsByEmail(form.getEmail())) {
             errors.rejectValue("email", "Duplicated");
         }
-
 
         String password = form.getPassword();
         String confirmPassword = form.getConfirmPassword();

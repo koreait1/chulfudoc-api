@@ -10,8 +10,7 @@ import lombok.Data;
 public class RequestJoin {
 
     @NotBlank
-    @Email
-    private String email;
+    private String userId;
 
     @NotBlank
     @Size(min=8)
@@ -22,6 +21,10 @@ public class RequestJoin {
 
     @NotBlank
     private String name;
+
+    @NotBlank
+    @Email
+    private String email;
 
     @NotBlank
     private String mobile;

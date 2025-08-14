@@ -24,6 +24,7 @@ public class TokenServiceTest {
     @BeforeEach
     void init() {
         RequestJoin form = new RequestJoin();
+        form.setUserId("user01");
         form.setEmail("user01@test.org");
         form.setPassword("!aA123456");
         form.setConfirmPassword(form.getPassword());
@@ -32,12 +33,13 @@ public class TokenServiceTest {
         form.setTermsAgree(true);
 
         joinService.process(form);
+        System.out.println("Join 테스트 성공");
     }
 
     @Test
     @DisplayName("토큰 발급 테스트")
     void jwtCreationTest() {
-        String token = tokenService.create("user01@test.org");
+        String token = tokenService.create("user01");
         System.out.println(token);
 
         assertNotNull(token);
