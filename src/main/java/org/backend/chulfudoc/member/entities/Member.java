@@ -17,8 +17,9 @@ import java.time.LocalDateTime;
         @Index(name="idx_member_mobile", columnList = "mobile")
 })
 public class Member extends BaseEntity implements Serializable {
+    // 변경하실때 오늘의 할일 쪽 구글 시트에 클래스랑 작업자 적어주세요
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 변경하실때 오늘의 할일 쪽 구글 시트에 클래스랑 작업자 적어주세요
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
 
     @Column(length=75, unique = true, nullable = false)
