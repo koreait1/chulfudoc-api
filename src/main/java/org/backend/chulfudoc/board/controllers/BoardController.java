@@ -85,10 +85,36 @@ public class BoardController {
         return configInfoService.getList(search, true);
     }
 
-    @PostMapping("/update/config")
-    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "게시판 설정 등록 및 수정 ", method = "POST, PATCH", description = "POST로 요청을 보내면 게시판 설정 등록, PATCH로 요청을 보내면 게시판 설정 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "게시판 설정 등록 완료"),
+            @ApiResponse(responseCode = "200", description = "게시판 설정 수정 완료")
+            })
+    @Parameters ({
+            @Parameter(name="bid", required = true, description = "게시판 아이디"),
+            @Parameter(name="name", required = true, description = "게시판 이름"),
+            @Parameter(name="rowsForPage", description = "한 페이지당 레코드 갯수, 기본값 20"),
+            @Parameter(name = "pageCount", description = "노출될 페이지 갯수, 기본값 10"),
+            @Parameter(name = "skin", description = "스킨, 기본값은 default"),
+            @Parameter(name = "category", description = "게시판 분류, 여러 분류가 있는 경우는 줄개행 문자로 여러 개 입력"),
+            @Parameter(name = "active", description = "게시판 사용 여부, true 또는 false"),
+            @Parameter(name = "editor", description = "에디터 사용 여부, true 또는 false"),
+            @Parameter(name = "imageUpload", description = "에디터에 이미지 추가 기능 사용 여부, true 또는 false"),
+            @Parameter(name="attachFile", description = "파일 첨부 기능 사용 여부, true 또는 false"),
+            @Parameter(name = "comment", description = "댓글 사용 여부, true 또는 false"),
+            @Parameter(name = "afterWritingRedirect", description = "글 작성 후 이동 방향, false : 게시글 목록, true : 게시글 상세, 기본값 false"),
+            @Parameter(name = "showViewList", description = "글보기 하단에 목록 노출 여부, true 또는 false"),
+            @Parameter(name = "listAuthority", description = "목록 권한, All - 전체, MEMBER - 회원, ADMIN - 관리자, 기본값 ALL"),
+            @Parameter(name = "viewAuthority", description = "글보기 권한, All - 전체, MEMBER - 회원, ADMIN - 관리자 , 기본값 ALL"),
+            @Parameter(name = "writeAuthority", description = "글쓰기 권한, All - 전체, MEMBER - 회원, ADMIN - 관리자, 기본값 ALL"),
+            @Parameter(name = "commentAuthority", description = "댓글 작성 권한, All - 전체, MEMBER - 회원, ADMIN - 관리자, 기본값 ALL"),
+    })
+    @RequestMapping(path="/update/config", method = {RequestMethod.POST, RequestMethod.PATCH})
     @PreAuthorize("hasAuthority('ADMIN')")
-    public void updateConfig(@Valid RequestBoardConfig form, Errors errors) {
+    public ResponseEntity<Void> updateConfig(@Valid RequestBoardConfig form, Errors errors) {
+        String mode = request.getMethod().equalsIgnoreCase("PATCH") ? "update" : "register";
+        form.setMode(mode);
+
         boardConfigValidator.validate(form, errors);
 
         if (errors.hasErrors()) {
@@ -96,6 +122,8 @@ public class BoardController {
         }
 
         configUpdateService.process(form);
+
+        return ResponseEntity.status(mode.equals("update") ? HttpStatus.OK : HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "게시글 한 개 조회", method = "GET", description = "경로변수 형태로 게시글 조회, /api/v1/board/info/게시글번호 형식으로 조회 요청")
