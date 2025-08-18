@@ -15,15 +15,20 @@ import org.backend.chulfudoc.board.entities.BoardData;
 import org.backend.chulfudoc.board.entities.Comment;
 import org.backend.chulfudoc.board.services.*;
 import org.backend.chulfudoc.board.services.configs.BoardConfigInfoService;
+import org.backend.chulfudoc.board.services.configs.BoardConfigUpdateService;
+import org.backend.chulfudoc.board.validators.BoardConfigValidator;
 import org.backend.chulfudoc.board.validators.BoardValidator;
 import org.backend.chulfudoc.board.validators.CommentValidator;
 import org.backend.chulfudoc.global.exceptions.BadRequestException;
+import org.backend.chulfudoc.global.exceptions.UnAuthorizedException;
 import org.backend.chulfudoc.global.libs.Utils;
+import org.backend.chulfudoc.global.search.CommonSearch;
 import org.backend.chulfudoc.global.search.ListData;
 import org.backend.chulfudoc.member.libs.MemberUtil;
 import org.backend.chulfudoc.member.services.MemberSessionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -47,13 +52,53 @@ public class BoardController {
     private final BoardUpdateService updateService;
     private final BoardDeleteService deleteService;
     private final BoardValidator boardValidator;
+    private final BoardConfigValidator boardConfigValidator;
+    private final BoardConfigUpdateService configUpdateService;
     private final MemberUtil memberUtil;
     private final HttpServletRequest request;
     private final MemberSessionService session;
     private final PasswordEncoder encoder;
     private final Utils utils;
 
-    @Operation(summary = "게시글 한개 조회", method = "GET", description = "경로변수 형태로 게시글 조회, /api/v1/board/info/게시글번호 형식으로 조회 요청")
+    @Operation(summary = "게시판별 설정 조회", method = "GET", description = "게시판별(bid - 게시판 아이디) 설정조회")
+    @Parameter(name="bid", required = true, in = ParameterIn.PATH, description = "게시판 아이디")
+    @GetMapping("/config/{bid}")
+    public Board getConfig(@PathVariable("bid") String bid) {
+        return configInfoService.get(bid);
+    }
+
+    @Operation(summary = "게시판 설정 목록(소비자 페이지에서 사용)", method = "GET", description = "미사용 중인 게시판은 노출이 되지 않는다.")
+    @GetMapping("/configs")
+    public List<Board> getConfigs() {
+        CommonSearch search = new CommonSearch();
+        search.setPage(1);
+        search.setLimit(100000);
+
+        ListData<Board> data = configInfoService.getList(search, false);
+        return data.getItems();
+    }
+
+    @Operation(summary = "게시판 설정 목록(관리자페이지에서 사용)", method = "GET", description = "관리자 권한이 있을 때만 접근 가능, 모든 게시판 설정이 조회가 된다. 페이지네이션 데이터도 함께 전송")
+    @GetMapping("/configs/all")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ListData<Board> getConfigsAll(@ModelAttribute CommonSearch search) {
+        return configInfoService.getList(search, true);
+    }
+
+    @PostMapping("/update/config")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void updateConfig(@Valid RequestBoardConfig form, Errors errors) {
+        boardConfigValidator.validate(form, errors);
+
+        if (errors.hasErrors()) {
+           throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+
+        configUpdateService.process(form);
+    }
+
+    @Operation(summary = "게시글 한 개 조회", method = "GET", description = "경로변수 형태로 게시글 조회, /api/v1/board/info/게시글번호 형식으로 조회 요청")
     @ApiResponse(responseCode = "200", description = "게시글 한개")
     @Parameter(name="seq", required = true, in= ParameterIn.PATH, description = "게시글 등록번호")
     @GetMapping("/info/{seq}")
