@@ -2,6 +2,20 @@ server:
   port: 4000 # 포트번호 추천받아요
 
 spring:
+  # 이메일
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.username} # 이메일을 보내는 주최
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true # 사용자 인증 시도 여부 - 기본값 false
+          timeout: 5000
+          starttls:
+            enable: true
+
   # 레디스 설정
   data:
     redis:
