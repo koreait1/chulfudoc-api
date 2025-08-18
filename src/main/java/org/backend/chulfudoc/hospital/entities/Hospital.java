@@ -1,4 +1,4 @@
-package org.backend.chulfudoc.aed.entities;
+package org.backend.chulfudoc.hospital.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;

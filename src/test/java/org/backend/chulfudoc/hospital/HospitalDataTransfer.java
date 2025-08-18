@@ -2,8 +2,8 @@ package org.backend.chulfudoc.hospital;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import org.backend.chulfudoc.aed.entities.Hospital;
-import org.backend.chulfudoc.aed.repositories.HospitalRepository;
+import org.backend.chulfudoc.hospital.entities.Hospital;
+import org.backend.chulfudoc.hospital.repositories.HospitalRepository;
 import org.junit.jupiter.api.Test;
 import org.locationtech.proj4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
