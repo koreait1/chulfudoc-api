@@ -1,30 +1,43 @@
 package org.backend.chulfudoc.global.email.services;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.global.email.entities.EmailMessage;
+import org.backend.chulfudoc.global.email.entities.EmailSession;
+import org.backend.chulfudoc.global.email.repositories.EmailSessionRepository;
 import org.backend.chulfudoc.global.libs.Utils;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-
+@Service
 @RequiredArgsConstructor
 public class EmailVerifyService {
 
-    private final EmailSendService service;
-    private final HttpSession session;
     private final Utils utils;
+    private final EmailSendService service;
+    private final EmailSessionRepository repository;
 
     // 인증 번호 생성
     public boolean sendCode(String email) {
         int authNum = (int)(Math.random() * 99999);
 
-        // 세션 속성값에 생성한 인증번호 저장
-        session.setAttribute("EmailAuthNum", authNum);
-        System.out.println(session.getAttribute("EmailAuthNum"));
-        // 세션 속성값에 현재 시간 값 저장 (인증 시간 제한을 두기 위해)
-        session.setAttribute("EmailAuthStart", System.currentTimeMillis());
+        // redis에 생성한 인증번호 저장
+        EmailSession session = new EmailSession();
+        session.setKey("EmailAuthNum");
+        session.setValue(authNum);
+        repository.save(session);
+
+        // redis에 저장한 인증번호 조회
+        Optional<EmailSession> result = repository.findById("EmailAuthNum");
+
+        if (result.isPresent()) {
+            EmailSession session2 = result.get();
+            System.out.println("조회된 인증번호 값: " + session2.getValue());
+        } else {
+            System.out.println("값 없음");
+        }
 
         // 공통 메시지 관리에서 제목과 메일 내용을 가져와 메시지 VO값에 대입
         // 회원가입 이메일 인증메일입니다. | 발급된 인증코드를 회원가입 목록에 입력하세요.
@@ -43,25 +56,18 @@ public class EmailVerifyService {
     // 인증번호 일치 여부 체크
     public boolean check(int code) {
 
-        Integer authNum = (Integer)session.getAttribute("EmailAuthNum");
-        Long stime = (Long)session.getAttribute("EmailAuthStart");
-        if (authNum != null && stime != null) {
-            /* 인증 시간 만료 여부 체크 - 3분 유효시간 */
-            boolean isExpired = (System.currentTimeMillis() - stime.longValue()) > 1000 * 60 * 3;
-            if (isExpired) { // 만료되었다면 세션 비우고 검증 실패 처리
-                session.removeAttribute("EmailAuthNum");
-                session.removeAttribute("EmailAuthStart");
+        // 인증번호 값 가져오기
+        Optional<EmailSession> session = repository.findById("EmailAuthNum");
 
-                return false;
-            }
+        if (session.isPresent()) {
+            EmailSession authNum = session.get();
+            System.out.println("인증 번호: " + authNum.getValue());
 
-            // 사용자 입력 코드와 발급 코드가 일치하는지 여부 체크
-            boolean isVerified = code == authNum;
-            session.setAttribute("EmailAuthVerified", isVerified);
+            return code == authNum.getValue();
+        } else {
+            System.out.println("인증번호 없음(기한 만료)");
 
-            return isVerified;
+            return false;
         }
-
-        return false;
     }
 }

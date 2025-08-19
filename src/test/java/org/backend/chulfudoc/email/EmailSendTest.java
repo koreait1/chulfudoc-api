@@ -1,17 +1,26 @@
 package org.backend.chulfudoc.email;
 
 import org.backend.chulfudoc.global.email.entities.EmailMessage;
+import org.backend.chulfudoc.global.email.entities.EmailSession;
+import org.backend.chulfudoc.global.email.repositories.EmailSessionRepository;
 import org.backend.chulfudoc.global.email.services.EmailSendService;
+import org.backend.chulfudoc.global.email.services.EmailVerifyService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -21,7 +30,13 @@ public class EmailSendTest {
     private EmailSendService service;
 
     @Autowired
+    private EmailVerifyService emailVerifyService;
+
+    @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private EmailSessionRepository repository;
 
     @Test
     void test1(){
@@ -33,5 +48,34 @@ public class EmailSendTest {
         boolean success = service.sendEmail(message, "auth", tplData);
 
         assertTrue(success);
+    }
+
+    @Test
+    @DisplayName("EmailVerifyServiceTest")
+    void test2(){
+        boolean result = emailVerifyService.sendCode("tailred215@gmail.com");
+        assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("EmailControllerTest")
+    void test3() throws Exception{
+        MockHttpSession session = new MockHttpSession();
+
+        // API 요청 처리 (email 파라미터는 SQ에 심어서 요청 | 테스트를 위해 | 지정된 이메일로 인증 이메일 발급)
+        mockMvc.perform(get("/api/v1/email/verify").param("email","tailred215@gmail.com"))
+                .andDo(print()) // 요청/응답 정보를 콘솔에 출력
+                .andExpect(status().isOk()) // 응답 상태 점검 | 2xx
+                .andReturn().getResponse().getContentAsString();
+
+        Optional<EmailSession> result = repository.findById("EmailAuthNum");
+
+
+        EmailSession session2 = result.get();
+        Integer authNum = session2.getValue();
+
+        // API 요청 처리 (인증번호 검증)
+        mockMvc.perform(get("/api/v1/email/check").param("authNum", String.valueOf(111)))
+                .andDo(print());
     }
 }
