@@ -85,7 +85,7 @@ public class BoardInfoService {
         search = Objects.requireNonNullElseGet(search, BoardSearch::new);
 
         Member member = memberUtil.getMember();
-        search.setEmail(List.of(member.getEmail()));
+        search.setUserId(List.of(member.getUserId()));
 
         return getList(search);
     }
@@ -144,7 +144,7 @@ public class BoardInfoService {
         String skey = search.getSkey();
         LocalDate sDate = search.getSDate();
         LocalDate eDate = search.getEDate();
-        List<String> emails = search.getEmail();
+        List<String> userIds = search.getUserId();
 
         BooleanBuilder andBuilder = new BooleanBuilder();
         QBoardData boardData = QBoardData.boardData;
@@ -199,9 +199,9 @@ public class BoardInfoService {
             andBuilder.and(fields.contains(skey));
         }
 
-        // 회원 이메일로 게시글 조회
-        if (emails != null && !emails.isEmpty()) {
-            andBuilder.and(boardData.member.email.in(emails));
+        // 회원 아이디로 게시글 조회
+        if (userIds != null && !userIds.isEmpty()) {
+            andBuilder.and(boardData.member.userId.in(userIds));
         }
 
         /* 검색 조건 처리 E */
