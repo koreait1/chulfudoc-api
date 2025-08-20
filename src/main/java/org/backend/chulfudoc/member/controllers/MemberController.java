@@ -61,7 +61,7 @@ public class MemberController {
             @Parameter(name="password", required = true, description = "비밀번호")
     })
     @ApiResponse(responseCode = "200", description = "인증 성공시 토큰(JWT)발급")
-    @PostMapping(path = {"/token", "/social/token"})
+    @PostMapping("/token")
     public String token(
             @Valid @RequestBody(required = false) RequestLoginToken form,
             @Valid @RequestBody(required = false) RequestSocialToken socialForm,
