@@ -26,6 +26,8 @@ public class EmailVerifyService {
     // 인증 번호 생성
     public boolean sendCode(String email) {
         key = memberUtil.getUserHash();
+
+        // key 값 확인 용
         System.out.println("EmailVerifyService Key : " + key);
         int authNum = (int)(Math.random() * 99999);
 
@@ -57,10 +59,10 @@ public class EmailVerifyService {
     }
 
     // 인증번호 일치 여부 체크
-    public boolean check(String key, int code) {
+    public boolean check(String hash, int code) {
 
         // 인증번호 값 가져오기
-        Integer authNum = redisTemplate.opsForValue().get(key);
+        Integer authNum = redisTemplate.opsForValue().get(hash);
 
         if (authNum != null) {
             System.out.println("인증 번호: " + authNum);
