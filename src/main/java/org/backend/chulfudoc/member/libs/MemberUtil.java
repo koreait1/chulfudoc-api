@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -41,10 +40,10 @@ public class MemberUtil {
      *  회원 : PUUID
      * @return
      */
-    public int getUserHash() {
+    public String getUserHash() {
         String userHash = request.getHeader("User-Hash");
         userHash = StringUtils.hasText(userHash) ? userHash : UUID.randomUUID().toString();
 
-        return isLogin() ? Objects.hash(getMember().getPUUID()) : Objects.hash(userHash);
+        return isLogin() ? String.valueOf(getMember().getPUUID()) : String.valueOf(userHash);
     }
 }

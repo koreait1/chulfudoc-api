@@ -26,6 +26,10 @@ public class RedisConfig {
         RedisTemplate<?, ?> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
+        // 직렬화를 위한 설정 | value json형태로 저장
+//        template.setKeySerializer(new StringRedisSerializer());
+//        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+
         return template;
     }
 }

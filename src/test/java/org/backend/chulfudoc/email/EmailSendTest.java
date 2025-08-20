@@ -1,8 +1,6 @@
 package org.backend.chulfudoc.email;
 
 import org.backend.chulfudoc.global.email.entities.EmailMessage;
-import org.backend.chulfudoc.global.email.entities.EmailSession;
-import org.backend.chulfudoc.global.email.repositories.EmailSessionRepository;
 import org.backend.chulfudoc.global.email.services.EmailSendService;
 import org.backend.chulfudoc.global.email.services.EmailVerifyService;
 import org.junit.jupiter.api.DisplayName;
@@ -10,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpSession;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,7 +34,7 @@ public class EmailSendTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private EmailSessionRepository repository;
+    private RedisTemplate<String, Integer> redisTemplate;
 
     @Test
     void test1(){
@@ -60,7 +58,10 @@ public class EmailSendTest {
     @Test
     @DisplayName("EmailControllerTest")
     void test3() throws Exception{
-        MockHttpSession session = new MockHttpSession();
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+
+        //String key = "202508201";
 
         // API 요청 처리 (email 파라미터는 SQ에 심어서 요청 | 테스트를 위해 | 지정된 이메일로 인증 이메일 발급)
         mockMvc.perform(get("/api/v1/email/verify").param("email","tailred215@gmail.com"))
@@ -68,14 +69,15 @@ public class EmailSendTest {
                 .andExpect(status().isOk()) // 응답 상태 점검 | 2xx
                 .andReturn().getResponse().getContentAsString();
 
-        Optional<EmailSession> result = repository.findById("EmailAuthNum");
+        String key = emailVerifyService.getKeyValue();
+        System.out.println("Test Key : " + key);
 
-
-        EmailSession session2 = result.get();
-        Integer authNum = session2.getValue();
+        Integer authNum = redisTemplate.opsForValue().get(key);
 
         // API 요청 처리 (인증번호 검증)
-        mockMvc.perform(get("/api/v1/email/check").param("authNum", String.valueOf(111)))
+        mockMvc.perform(get("/api/v1/email/check")
+                        .param("User-Hash", key)
+                        .param("authNum", String.valueOf(authNum)))
                 .andDo(print());
     }
 }

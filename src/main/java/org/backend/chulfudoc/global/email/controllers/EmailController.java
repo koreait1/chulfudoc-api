@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.global.email.services.EmailVerifyService;
 import org.backend.chulfudoc.global.rests.JSONData;
+import org.backend.chulfudoc.member.libs.MemberUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmailController {
 
     private final EmailVerifyService verifyService;
+    private final MemberUtil memberUtil;
 
     @Operation(summary = "이메일 인증번호 발송", method = "GET")
     @ApiResponse(responseCode = "200", description = "이메일 발송 성공시 emailSuccess : true 반환")
@@ -43,11 +45,11 @@ public class EmailController {
     @ApiResponse(responseCode = "200", description = "인증 성공시 emailSuccess : true 반환")
     @Parameter(name="authNum", required = true, description = "이메일 인증번호")
     @GetMapping("/check")
-    public JSONData<Object> checkVerifiedEmail(@RequestParam("authNum") int authNum){
-
+    public JSONData<Object> checkVerifiedEmail(@RequestParam("authNum") int authNum, @RequestParam("User-Hash") String userHash){
+        //String key = "202508201";
         JSONData<Object> data = new JSONData<>();
 
-        boolean result = verifyService.check(authNum);
+        boolean result = verifyService.check(userHash, authNum);
         data.setEmailSuccess(result);
         if(result){
             data.setStatus(HttpStatus.OK);

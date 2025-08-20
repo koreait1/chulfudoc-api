@@ -2,14 +2,14 @@ package org.backend.chulfudoc.global.email.services;
 
 import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.global.email.entities.EmailMessage;
-import org.backend.chulfudoc.global.email.entities.EmailSession;
-import org.backend.chulfudoc.global.email.repositories.EmailSessionRepository;
 import org.backend.chulfudoc.global.libs.Utils;
+import org.backend.chulfudoc.member.libs.MemberUtil;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -17,27 +17,30 @@ public class EmailVerifyService {
 
     private final Utils utils;
     private final EmailSendService service;
-    private final EmailSessionRepository repository;
+    private final MemberUtil memberUtil;
+    private final RedisTemplate<String, Integer> redisTemplate;
+
+    // 테스트를 위한 전역 선언
+    private String key;
 
     // 인증 번호 생성
     public boolean sendCode(String email) {
+        key = memberUtil.getUserHash();
+        System.out.println("EmailVerifyService Key : " + key);
         int authNum = (int)(Math.random() * 99999);
 
-        // redis에 생성한 인증번호 저장
-        EmailSession session = new EmailSession();
-        session.setKey("EmailAuthNum");
-        session.setValue(authNum);
-        repository.save(session);
+        // redis에 User-Hash & 생성한 인증번호 저장
+        redisTemplate.opsForValue().set(key, authNum, 3, TimeUnit.MINUTES);
 
-        // redis에 저장한 인증번호 조회
-        Optional<EmailSession> result = repository.findById("EmailAuthNum");
+        // redis에 저장한 인증번호 조회 (Test를 위해 임시 작성) S
+        Integer result = redisTemplate.opsForValue().get(key);
 
-        if (result.isPresent()) {
-            EmailSession session2 = result.get();
-            System.out.println("조회된 인증번호 값: " + session2.getValue());
+        if (result != null) {
+            System.out.println("조회된 인증번호 값: " + result);
         } else {
             System.out.println("값 없음");
         }
+        // redis에 저장한 인증번호 조회 (Test를 위해 임시 작성) E
 
         // 공통 메시지 관리에서 제목과 메일 내용을 가져와 메시지 VO값에 대입
         // 회원가입 이메일 인증메일입니다. | 발급된 인증코드를 회원가입 목록에 입력하세요.
@@ -54,20 +57,24 @@ public class EmailVerifyService {
     }
 
     // 인증번호 일치 여부 체크
-    public boolean check(int code) {
+    public boolean check(String key, int code) {
 
         // 인증번호 값 가져오기
-        Optional<EmailSession> session = repository.findById("EmailAuthNum");
+        Integer authNum = redisTemplate.opsForValue().get(key);
 
-        if (session.isPresent()) {
-            EmailSession authNum = session.get();
-            System.out.println("인증 번호: " + authNum.getValue());
+        if (authNum != null) {
+            System.out.println("인증 번호: " + authNum);
 
-            return code == authNum.getValue();
+            return code == authNum;
         } else {
             System.out.println("인증번호 없음(기한 만료)");
 
             return false;
         }
+    }
+
+    // 테스트를 위한 key 값 전달 메서드
+    public String getKeyValue(){
+        return key;
     }
 }

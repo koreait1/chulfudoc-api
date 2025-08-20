@@ -12,7 +12,7 @@ public class EmailSession implements Serializable {
     // redis에 저장 및 불러오기를 위해 Serializable로 직렬화 redis 저장 형태(byte) 사람이 읽으려면 String
 
     @Id
-    private String key;
+    private String hash;
 
     private int value;
 }
