@@ -9,7 +9,10 @@ import org.backend.chulfudoc.global.exceptions.UnAuthorizedException;
 import org.backend.chulfudoc.global.libs.Utils;
 import org.backend.chulfudoc.member.MemberInfo;
 import org.backend.chulfudoc.member.constants.Authority;
+import org.backend.chulfudoc.member.controllers.RequestSocialToken;
 import org.backend.chulfudoc.member.entities.Member;
+import org.backend.chulfudoc.member.exceptions.MemberNotFoundException;
+import org.backend.chulfudoc.member.repositories.MemberRepository;
 import org.backend.chulfudoc.member.services.MemberInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -32,15 +35,17 @@ public class TokenService {
 
     private final JwtProperties properties;
     private final MemberInfoService infoService;
+    private final MemberRepository repository;
 
     @Autowired
     private Utils utils;
 
     private Key key; // private key
 
-    public TokenService(JwtProperties properties, MemberInfoService infoService) {
+    public TokenService(JwtProperties properties, MemberInfoService infoService, MemberRepository repository) {
         this.properties = properties;
         this.infoService = infoService;
+        this.repository = repository;
 
         byte[] keyBytes = Decoders.BASE64.decode(properties.getSecret());
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -65,6 +70,12 @@ public class TokenService {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(date)
                 .compact();
+    }
+
+    public String create(RequestSocialToken form){
+        Member member = repository.findBySocialChannelAndSocialToken(form.getChannel(), form.getToken()).orElseThrow(MemberNotFoundException::new);
+
+        return create(member.getUserId());
     }
 
     /**
