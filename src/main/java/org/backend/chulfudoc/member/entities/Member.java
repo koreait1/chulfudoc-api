@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.backend.chulfudoc.global.entities.BaseEntity;
 import org.backend.chulfudoc.member.constants.Authority;
+import org.backend.chulfudoc.member.constants.SocialChannel;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,7 +15,8 @@ import java.time.LocalDateTime;
 @Table(indexes = {
         @Index(name="idx_member_created_at", columnList = "createdAt DESC"),
         @Index(name="idx_member_name", columnList = "name"),
-        @Index(name="idx_member_mobile", columnList = "mobile")
+        @Index(name="idx_member_mobile", columnList = "mobile"),
+        @Index(name="idx_member_social", columnList = "socialChannel, socialToken")
 })
 public class Member extends BaseEntity implements Serializable {
     // 변경하실때 오늘의 할일 쪽 구글 시트에 클래스랑 작업자 적어주세요
@@ -48,6 +50,12 @@ public class Member extends BaseEntity implements Serializable {
     private LocalDateTime expired; // 계정 만료 일자, null이면 만료 X
 
     private LocalDateTime credentialChangedAt; // 비밀번호 변경 일시
+
+    @Enumerated(EnumType.STRING)
+    public SocialChannel socialChannel;
+
+    @Column(length = 45)
+    public String socialToken;
 
     public boolean isAdmin() {
         return authority != null && authority == Authority.ADMIN;

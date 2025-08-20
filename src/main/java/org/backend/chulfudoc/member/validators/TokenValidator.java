@@ -1,6 +1,7 @@
 package org.backend.chulfudoc.member.validators;
 
 import lombok.RequiredArgsConstructor;
+import org.backend.chulfudoc.member.controllers.RequestLoginToken;
 import org.backend.chulfudoc.member.controllers.RequestToken;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.repositories.MemberRepository;
@@ -27,7 +28,9 @@ public class TokenValidator implements Validator {
             return;
         }
 
-        RequestToken form = (RequestToken) target;
+        if(!(target instanceof RequestLoginToken)) return;
+
+        RequestLoginToken form = (RequestLoginToken) target;
         Member member = repository.findByUserId(form.getUserId()).orElse(null);
 
         if (member == null) {

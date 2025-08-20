@@ -14,6 +14,6 @@ public class BoardView {
     private Long seq; // 게시글 번호
 
     @Id
-    private int hash; // 비회원 : IP + User-Agent / 회원 : IP + User-Agent + 회원번호
+    private String hash; // 비회원 : IP + User-Agent / 회원 : IP + User-Agent + 회원번호
 
 }
