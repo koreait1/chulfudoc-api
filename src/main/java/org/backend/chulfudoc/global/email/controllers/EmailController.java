@@ -43,10 +43,10 @@ public class EmailController {
     @ApiResponse(responseCode = "200", description = "인증 성공시 emailSuccess : true 반환")
     @Parameter(name="authNum", required = true, description = "이메일 인증번호")
     @GetMapping("/check")
-    public JSONData<Object> checkVerifiedEmail(@RequestParam("authNum") int authNum, @RequestParam("User-Hash") String userHash){
+    public JSONData<Object> checkVerifiedEmail(@RequestParam("authNum") int authNum){
         JSONData<Object> data = new JSONData<>();
 
-        boolean result = verifyService.check(userHash, authNum);
+        boolean result = verifyService.check(authNum);
         data.setEmailSuccess(result);
         if(result){
             data.setStatus(HttpStatus.OK);
