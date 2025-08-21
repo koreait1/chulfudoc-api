@@ -7,7 +7,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long>, QuerydslPredicateExecutor<Member> {
+public interface MemberRepository extends JpaRepository<Member, String>, QuerydslPredicateExecutor<Member> {
     Optional<Member> findByUserId(String userId);
     Optional<Member> findBySocialChannelAndSocialToken(SocialChannel channel, String socialToken);
 
