@@ -10,6 +10,6 @@ public class BoardSearch extends CommonSearch {
 
     private List<String> bid;
     private List<String> category;
-    private List<String> email;
+    private List<String> userId;
 
 }

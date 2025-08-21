@@ -20,7 +20,7 @@ public class BoardViewCountService {
 
     public void update(Long seq) {
         try {
-            int hash = memberUtil.getUserHash();
+            String hash = memberUtil.getUserHash();
             BoardView item = new BoardView();
             item.setHash(hash);
             item.setSeq(seq);

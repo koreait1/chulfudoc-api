@@ -4,12 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class RequestLoginToken {
-
+public class RequestLoginToken extends RequestToken{
     @NotBlank
     private String userId;
 
     @NotBlank
     private String password;
-
 }

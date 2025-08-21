@@ -1,4 +1,9 @@
 package org.backend.chulfudoc.member.controllers;
 
-public class RequestToken {
+import lombok.Data;
+
+@Data
+public abstract class RequestToken {
+
+
 }

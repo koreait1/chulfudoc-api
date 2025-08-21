@@ -55,14 +55,17 @@ public class MemberController {
      *
      * @return
      */
-    @Operation(summary = "회원 인증 처리", description = "이메일과 비밀번호로 인증한 후 회원 전용 요청을 보낼수 있는 토큰(JWT)을 발급")
+    @Operation(summary = "회원 인증 처리", description = "아이디와 비밀번호로 인증한 후 회원 전용 요청을 보낼수 있는 토큰(JWT)을 발급")
     @Parameters({
-            @Parameter(name="email", required = true, description = "이메일"),
+            @Parameter(name="userId", required = true, description = "아이디"),
             @Parameter(name="password", required = true, description = "비밀번호")
     })
     @ApiResponse(responseCode = "200", description = "인증 성공시 토큰(JWT)발급")
     @PostMapping("/token")
-    public String token(@Valid @RequestBody RequestLoginToken form, Errors errors) {
+    public String token(
+            @Valid @RequestBody(required = false) RequestLoginToken form,
+            @Valid @RequestBody(required = false) RequestSocialToken socialForm,
+            Errors errors) {
 
         tokenValidator.validate(form, errors);
 

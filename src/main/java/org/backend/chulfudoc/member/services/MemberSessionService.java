@@ -44,7 +44,7 @@ public class MemberSessionService {
     }
 
     private String getKey(String key) {
-        int userHash = memberUtil.getUserHash();
+        String userHash = memberUtil.getUserHash();
         return String.format("%s_%s", userHash, key);
     }
 
