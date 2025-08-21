@@ -72,7 +72,7 @@ public class MemberControllerTest {
         form.setTermsAgree(true);
         joinService.process(form);
 
-        RequestToken form2 = new RequestToken();
+        RequestLoginToken form2 = new RequestLoginToken();
         form2.setUserId("user01");
         form2.setPassword("!aA123456");
         String body = om.writeValueAsString(form2);

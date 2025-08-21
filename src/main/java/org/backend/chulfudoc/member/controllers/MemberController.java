@@ -62,7 +62,7 @@ public class MemberController {
     })
     @ApiResponse(responseCode = "200", description = "인증 성공시 토큰(JWT)발급")
     @PostMapping("/token")
-    public String token(@Valid @RequestBody RequestToken form, Errors errors) {
+    public String token(@Valid @RequestBody RequestLoginToken form, Errors errors) {
 
         tokenValidator.validate(form, errors);
 
