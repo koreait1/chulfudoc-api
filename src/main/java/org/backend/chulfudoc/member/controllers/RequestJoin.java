@@ -10,6 +10,9 @@ import lombok.Data;
 public class RequestJoin {
 
     @NotBlank
+    private String gid;
+
+    @NotBlank
     private String userId;
 
     @NotBlank

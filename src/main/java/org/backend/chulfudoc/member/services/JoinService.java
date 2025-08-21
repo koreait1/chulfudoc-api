@@ -1,6 +1,7 @@
 package org.backend.chulfudoc.member.services;
 
 import lombok.RequiredArgsConstructor;
+import org.backend.chulfudoc.file.services.FileUploadService;
 import org.backend.chulfudoc.member.constants.Authority;
 import org.backend.chulfudoc.member.controllers.RequestJoin;
 import org.backend.chulfudoc.member.entities.Member;
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Lazy
 @Service
 @RequiredArgsConstructor
 public class JoinService {
 
+    private final FileUploadService uploadService;
     private final MemberRepository repository;
     private final PasswordEncoder encoder;
     private final ModelMapper mapper;
@@ -33,7 +36,15 @@ public class JoinService {
         member.setCredentialChangedAt(LocalDateTime.now());
         member.setAuthority(Authority.MEMBER);
 
+        String gid = form.getGid();
+        gid = StringUtils.hasText(gid) ? gid : UUID.randomUUID().toString();
+
+        member.setGid(gid);
+
         repository.saveAndFlush(member);
+
+        // 파일 업로드 완료 처리
+        uploadService.processDone(gid);
     }
 
 }
