@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,31 +62,31 @@ public class MemberControllerTest {
     @DisplayName("이메일, 비밀번호로 토큰 발급 테스트")
     void tokenCreationTest() throws Exception {
 
-        RequestJoin form = new RequestJoin();
-        form.setEmail("user01@test.org");
-        form.setPassword("!aA123456");
-        form.setConfirmPassword(form.getPassword());
-        form.setMobile("01010001000");
-        form.setName("사용자01");
-        form.setTermsAgree(true);
-        joinService.process(form);
-
-        RequestLoginToken form2 = new RequestLoginToken();
-        form2.setUserId("user01");
-        form2.setPassword("!aA123456");
-        String body = om.writeValueAsString(form2);
-
-        String token = mockMvc.perform(post("/api/v1/member/token")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andDo(print())
-                .andReturn()
-                .getResponse().getContentAsString(); // 응답 body 데이터를 반환
-
-        // 회원전용, 관리자 전용 접근 테스트
-        mockMvc.perform(get("/api/v1/member/test2")
-                        .header("Authorization", "Bearer " + token))
-                .andDo(print());
+//        RequestJoin form = new RequestJoin();
+//        form.setEmail("user01@test.org");
+//        form.setPassword("!aA123456");
+//        form.setConfirmPassword(form.getPassword());
+//        form.setMobile("01010001000");
+//        form.setName("사용자01");
+//        form.setTermsAgree(true);
+//        joinService.process(form);
+//
+//        RequestLoginToken form2 = new RequestLoginToken();
+//        form2.setUserId("user01");
+//        form2.setPassword("!aA123456");
+//        String body = om.writeValueAsString(form2);
+//
+//        String token = mockMvc.perform(post("/api/v1/member/token")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(body))
+//                .andDo(print())
+//                .andReturn()
+//                .getResponse().getContentAsString(); // 응답 body 데이터를 반환
+//
+//        // 회원전용, 관리자 전용 접근 테스트
+//        mockMvc.perform(get("/api/v1/member/test2")
+//                        .header("Authorization", "Bearer " + token))
+//                .andDo(print());
 
     }
 

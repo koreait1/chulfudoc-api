@@ -9,7 +9,7 @@ import org.backend.chulfudoc.global.exceptions.UnAuthorizedException;
 import org.backend.chulfudoc.global.libs.Utils;
 import org.backend.chulfudoc.member.MemberInfo;
 import org.backend.chulfudoc.member.constants.Authority;
-import org.backend.chulfudoc.member.controllers.RequestSocialToken;
+import org.backend.chulfudoc.member.constants.SocialChannel;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.exceptions.MemberNotFoundException;
 import org.backend.chulfudoc.member.repositories.MemberRepository;
@@ -67,15 +67,16 @@ public class TokenService {
         return Jwts.builder()
                 .setSubject(member.getUserId())
                 .claim("authority", member.getAuthority())
+
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(date)
                 .compact();
     }
 
-    public String create(RequestSocialToken form){
-        Member member = repository.findBySocialChannelAndSocialToken(form.getChannel(), form.getToken()).orElseThrow(MemberNotFoundException::new);
+    public String create(SocialChannel channel, String token){
+        Member member = repository.findBySocialChannelAndSocialToken(channel, token).orElseThrow(MemberNotFoundException::new);
 
-        return create(member.getUserId());
+        return create(member.getEmail());
     }
 
     /**

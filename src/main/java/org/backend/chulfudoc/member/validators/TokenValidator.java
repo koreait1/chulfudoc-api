@@ -1,13 +1,13 @@
 package org.backend.chulfudoc.member.validators;
 
 import lombok.RequiredArgsConstructor;
-import org.backend.chulfudoc.member.controllers.RequestLoginToken;
 import org.backend.chulfudoc.member.controllers.RequestToken;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.repositories.MemberRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Component
@@ -24,24 +24,32 @@ public class TokenValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        if (errors.hasErrors()) {
-            return;
-        }
+        RequestToken form = (RequestToken) target;
+        if (form.isSocial()) { // 소셜 로그인 요청인 경우
+            if (form.getSocialChannel() == null) {
+                errors.rejectValue("socialChannel", "NotNull");
+            }
 
-        if(!(target instanceof RequestLoginToken)) return;
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "socialToken", "NotBlank");
 
-        RequestLoginToken form = (RequestLoginToken) target;
-        Member member = repository.findByUserId(form.getUserId()).orElse(null);
+        } else { // 일반 로그인 요청인 경우
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotBlank");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotBlank");
 
-        if (member == null) {
-            errors.reject("NotFound.member.or.password");
-        }
+            if (errors.hasErrors()) return;
 
-        // 비밀번호 검증
+            Member member = repository.findByUserId(form.getEmail()).orElse(null);
 
-        if (member != null && !encoder.matches(form.getPassword(), member.getPassword())) {
-            errors.reject("NotFound.member.or.password");
+            if (member == null) {
+                errors.reject("NotFound.member.or.password");
+            }
 
+            // 비밀번호 검증
+
+            if (member != null && !encoder.matches(form.getPassword(), member.getPassword())) {
+                errors.reject("NotFound.member.or.password");
+
+            }
         }
     }
 }
