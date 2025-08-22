@@ -26,7 +26,12 @@ public class EmailVerifyService {
 
         // key 값 확인 용
         System.out.println("EmailVerifyService Key : " + key);
-        int authNum = (int)(Math.random() * 99999);
+        int authNum;
+
+        do {
+            authNum = (int)(Math.random() * 1000000); // 0 ~ 999999
+        } while (authNum < 100000);
+
 
         // redis에 User-Hash & 생성한 인증번호 저장
         redisTemplate.opsForValue().set(key, authNum, 3, TimeUnit.MINUTES);
