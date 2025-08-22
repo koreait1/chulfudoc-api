@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@OpenAPIDefinition(info=@Info(title="게시판 API", license = @License(name="MIT"), contact = @Contact(email="yonggyo00@kakao.com")))
+@OpenAPIDefinition(info=@Info(title="철푸닥 API", license = @License(name="MIT"), contact = @Contact(email="kiana507680@gmail.com")))
 public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi groupedOpenApi() {
         return GroupedOpenApi.builder()
-                .group("게시판 API")
+                .group("철푸닥 API")
                 .pathsToMatch("/api/v1/**")
                 .build();
     }

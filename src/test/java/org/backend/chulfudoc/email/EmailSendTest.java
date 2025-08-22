@@ -61,23 +61,21 @@ public class EmailSendTest {
 
         MockHttpServletRequest request = new MockHttpServletRequest();
 
-        //String key = "202508201";
-
         // API 요청 처리 (email 파라미터는 SQ에 심어서 요청 | 테스트를 위해 | 지정된 이메일로 인증 이메일 발급)
-        mockMvc.perform(get("/api/v1/email/verify").param("email","tailred215@gmail.com"))
+        mockMvc.perform(get("/api/v1/email/verify").param("email","tailred215@gmail.com")
+                        .header("User-Hash", "1111"))
                 .andDo(print()) // 요청/응답 정보를 콘솔에 출력
                 .andExpect(status().isOk()) // 응답 상태 점검 | 2xx
                 .andReturn().getResponse().getContentAsString();
 
-        String key = emailVerifyService.getKeyValue();
-        System.out.println("Test Key : " + key);
+        String key = "1111";
 
         Integer authNum = redisTemplate.opsForValue().get(key);
 
         // API 요청 처리 (인증번호 검증)
         mockMvc.perform(get("/api/v1/email/check")
-                        .param("User-Hash", key)
-                        .param("authNum", String.valueOf(authNum)))
+                        .param("authNum", String.valueOf(123))
+                        .header("User-Hash", "1111"))
                 .andDo(print());
     }
 }
