@@ -3,6 +3,7 @@ package org.backend.chulfudoc.member.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.backend.chulfudoc.file.entities.FileInfo;
 import org.backend.chulfudoc.global.entities.BaseEntity;
 import org.backend.chulfudoc.member.constants.Authority;
 import org.backend.chulfudoc.member.constants.SocialChannel;
@@ -26,6 +27,9 @@ public class Member extends BaseEntity implements Serializable {
 
     @Column(length = 50, unique = true, nullable = false)
     private String userId;
+
+    @Column(length = 45)
+    private String gid;
 
     @Column(length=75, unique = true, nullable = false)
     private String email;
@@ -60,5 +64,8 @@ public class Member extends BaseEntity implements Serializable {
     public boolean isAdmin() {
         return authority != null && authority == Authority.ADMIN;
     }
+
+    @Transient
+    private FileInfo profileImage;
 
 }
