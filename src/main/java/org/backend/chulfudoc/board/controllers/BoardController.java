@@ -20,7 +20,6 @@ import org.backend.chulfudoc.board.validators.BoardConfigValidator;
 import org.backend.chulfudoc.board.validators.BoardValidator;
 import org.backend.chulfudoc.board.validators.CommentValidator;
 import org.backend.chulfudoc.global.exceptions.BadRequestException;
-import org.backend.chulfudoc.global.exceptions.UnAuthorizedException;
 import org.backend.chulfudoc.global.libs.Utils;
 import org.backend.chulfudoc.global.search.CommonSearch;
 import org.backend.chulfudoc.global.search.ListData;
@@ -111,7 +110,7 @@ public class BoardController {
     })
     @RequestMapping(path="/update/config", method = {RequestMethod.POST, RequestMethod.PATCH})
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Void> updateConfig(@Valid RequestBoardConfig form, Errors errors) {
+    public ResponseEntity<Void> updateConfig(@Valid @RequestBody RequestBoardConfig form, Errors errors) {
         String mode = request.getMethod().equalsIgnoreCase("PATCH") ? "update" : "register";
         form.setMode(mode);
 
