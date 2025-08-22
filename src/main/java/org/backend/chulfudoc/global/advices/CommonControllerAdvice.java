@@ -37,12 +37,10 @@ public class CommonControllerAdvice {
         } else if (e instanceof AuthorizationDeniedException) {
             status = HttpStatus.UNAUTHORIZED;
             message = utils.getMessage("UnAuthorized");
-        } else if (e instanceof AuthorizationDeniedException) {
-            status = HttpStatus.UNAUTHORIZED;
-            message = utils.getMessage("UnAuthorized");
         }
 
         e.printStackTrace();
+
 
         return ResponseEntity.status(status).body(new JSONError(status, message));
     }
