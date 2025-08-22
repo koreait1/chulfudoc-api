@@ -74,20 +74,13 @@ public class MemberController {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
 
-        return tokenService.create(form.getUserId());
+        return form == null ? tokenService.create(socialForm) : tokenService.create(form.getUserId());
     }
 
 //    @PreAuthorize("isAuthenticated()") // 로그인시에만 접근 가능
 //    @GetMapping("/test1")
 //    public void test1(Principal principal) { // 사용자 이름만 가져옴
 //        System.out.println("principal:" + principal.getName());
-//        System.out.println("로그인시 접근 가능 - test1()");
-//    }
-
-//    @PreAuthorize("isAuthenticated()") // 로그인시에만 접근 가능
-//    @GetMapping("/test1")
-//    public void test1(@AuthenticationPrincipal MemberInfo memberInfo) { // 사용자 정보를 가져옴
-//        System.out.println("memberInfo:" + memberInfo);
 //        System.out.println("로그인시 접근 가능 - test1()");
 //    }
 
@@ -100,7 +93,8 @@ public class MemberController {
     @ApiResponse(responseCode = "200")
     @GetMapping // GET /api/v1/member
     public ResponseEntity<Member> myInfo() {
-        return memberUtil.isLogin() ? ResponseEntity.ok(memberUtil.getMember()):ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return memberUtil.isLogin() ? ResponseEntity.ok(memberUtil.getMember()): ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
