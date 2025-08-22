@@ -92,10 +92,9 @@ public class MemberController {
     @Operation(summary = "로그인 상태인 회원 정보를 조회", method = "GET")
     @ApiResponse(responseCode = "200")
     @GetMapping // GET /api/v1/member
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Member> myInfo() {
 
-        return memberUtil.isLogin() ? ResponseEntity.ok(memberUtil.getMember()) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return memberUtil.isLogin() ? ResponseEntity.ok(memberUtil.getMember()): ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
