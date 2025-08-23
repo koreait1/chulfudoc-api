@@ -20,7 +20,7 @@ public class EmailVerifyService {
     private final MemberUtil memberUtil;
     private final RedisTemplate<String, Integer> redisTemplate;
 
-    // 인증 번호 생성
+    // 인증 번호 생성 및 발송
     public boolean sendCode(String email) {
         String key = memberUtil.getUserHash(); // 비회원 시도 : randomUuid || 회원 시도 : PUUID
 
@@ -64,7 +64,6 @@ public class EmailVerifyService {
     public boolean check(int code) {
 
         String hash = memberUtil.getUserHash();
-
         // 인증번호 값 가져오기
         Integer authNum = redisTemplate.opsForValue().get(hash);
 
