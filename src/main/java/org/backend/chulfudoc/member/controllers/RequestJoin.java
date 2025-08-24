@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 public class RequestJoin {
 
-    @NotBlank
     private String gid;
 
     @NotBlank
