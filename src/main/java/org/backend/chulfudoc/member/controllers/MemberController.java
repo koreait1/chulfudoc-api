@@ -61,7 +61,7 @@ public class MemberController {
      */
     @Operation(summary = "회원 인증 처리", description = "이메일과 비밀번호로 인증한 후 회원 전용 요청을 보낼수 있는 토큰(JWT)을 발급")
     @Parameters({
-            @Parameter(name="email", required = true, description = "이메일, 일반 로그인 시 필수"),
+            @Parameter(name="userId", required = true, description = "아이디, 일반 로그인 시 필수"),
             @Parameter(name="password", required = true, description = "비밀번호, 일반 로그인시 필수"),
             @Parameter(name="socialChannel", required = true, description = "소셜 로그인 채널 구분, 소셜 로그인 시 필수"),
             @Parameter(name="socialToken", required = true, description = "소셜 로그인시 발급받은 회원 구분 값, 소셜 로그인시에만 필수")
@@ -72,12 +72,11 @@ public class MemberController {
         form.setSocial(request.getRequestURI().contains("/social"));
 
         tokenValidator.validate(form, errors);
-
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
 
-        return form.isSocial() ? tokenService.create(form.getSocialChannel(), form.getSocialToken()) : tokenService.create(form.getEmail());
+        return form.isSocial() ? tokenService.create(form.getSocialChannel(), form.getSocialToken()) : tokenService.create(form.getUserId());
     }
 
 //    @PreAuthorize("isAuthenticated()") // 로그인시에만 접근 가능

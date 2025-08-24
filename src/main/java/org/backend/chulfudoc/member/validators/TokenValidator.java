@@ -33,12 +33,12 @@ public class TokenValidator implements Validator {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "socialToken", "NotBlank");
 
         } else { // 일반 로그인 요청인 경우
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotBlank");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userId", "NotBlank");
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotBlank");
 
             if (errors.hasErrors()) return;
 
-            Member member = repository.findByUserId(form.getEmail()).orElse(null);
+            Member member = repository.findByUserId(form.getUserId()).orElse(null);
 
             if (member == null) {
                 errors.reject("NotFound.member.or.password");

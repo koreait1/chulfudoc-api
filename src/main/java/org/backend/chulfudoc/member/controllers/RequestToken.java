@@ -7,7 +7,7 @@ import org.backend.chulfudoc.member.constants.SocialChannel;
 public class RequestToken {
 
     private boolean social;
-    private String email;
+    private String userId;
     private String password;
     private SocialChannel socialChannel;
     private String socialToken;

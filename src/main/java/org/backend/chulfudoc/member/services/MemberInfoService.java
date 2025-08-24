@@ -23,7 +23,7 @@ public class MemberInfoService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = repository.findByUserId(username).orElseThrow(() -> new UsernameNotFoundException(username));
 
-        addInfo(member); // 추가 정보 처리
+        //addInfo(member); // 추가 정보 처리
 
         return MemberInfo.builder()
                 .member(member)
@@ -41,5 +41,4 @@ public class MemberInfoService implements UserDetailsService {
             member.setProfileImage(fileInfoService.get(gid));
         }
     }
-
 }
