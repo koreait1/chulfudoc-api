@@ -44,8 +44,7 @@ public class FileInfoService {
 
     public FileInfo get(String gid) {
         List<FileInfo> items = getList(gid);
-        if (items == null || items.isEmpty()) return null;
-        return items.getFirst();
+        return items == null || items.isEmpty() ? null : items.get(0);
     }
 
     /**
