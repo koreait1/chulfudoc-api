@@ -9,7 +9,6 @@ import org.backend.chulfudoc.member.constants.SocialChannel;
 @Data
 public class RequestJoin {
 
-    @NotBlank
     private String gid;
 
     @NotBlank
