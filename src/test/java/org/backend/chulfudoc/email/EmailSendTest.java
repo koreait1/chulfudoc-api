@@ -74,7 +74,7 @@ public class EmailSendTest {
 
         // API 요청 처리 (인증번호 검증)
         mockMvc.perform(get("/api/v1/email/check")
-                        .param("authNum", String.valueOf(123))
+                        .param("authNum", String.valueOf(authNum))
                         .header("User-Hash", "1111"))
                 .andDo(print());
     }

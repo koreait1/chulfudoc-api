@@ -7,7 +7,9 @@ import org.backend.chulfudoc.member.controllers.RequestJoin;
 import org.backend.chulfudoc.member.repositories.MemberRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 @Lazy
@@ -36,6 +38,23 @@ public class JoinValidator implements Validator, PasswordValidator, MobileValida
          */
 
         RequestJoin form = (RequestJoin) target;
+        String password = form.getPassword();
+        String confirmPassword = form.getConfirmPassword();
+        boolean isSocial = form.getSocialChannel() != null && StringUtils.hasText(form.getSocialToken());
+
+        if (!isSocial) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userId", "NotBlank");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotBlank");
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "NotBlank");
+
+            if (StringUtils.hasText(password) && password.length() < 8) {
+                errors.rejectValue("password", "Size");
+            }
+        }
+
+        if (errors.hasErrors()) {
+            return;
+        }
 
         // 1. 아이디 중복 여부
         if (repository.existsByUserId(form.getUserId())) {
@@ -47,20 +66,20 @@ public class JoinValidator implements Validator, PasswordValidator, MobileValida
             errors.rejectValue("email", "Duplicated");
         }
 
-        String password = form.getPassword();
-        String confirmPassword = form.getConfirmPassword();
 
-        // 2. 비밀번호 복잡성
-        if (!checkAlpha(password, false) || !checkNumber(password) || !checkSpecialChars(password)) {
-            errors.rejectValue("password", "Complexity");
+        if (!isSocial) {
+            // 3. 비밀번호 복잡성
+            if (!checkAlpha(password, false) || !checkNumber(password) || !checkSpecialChars(password)) {
+                errors.rejectValue("password", "Complexity");
+            }
+
+            // 4. 비밀번호 확인 일치 여부
+            if (!password.equals(confirmPassword)) {
+                errors.rejectValue("confirmPassword", "Mismatch");
+            }
         }
 
-        // 3. 비밀번호 확인 일치 여부
-        if (!password.equals(confirmPassword)) {
-            errors.rejectValue("confirmPassword", "Mismatch");
-        }
-
-        // 4. 휴대전화번호 형식 검증
+        // 5. 휴대전화번호 형식 검증
         String mobile = form.getMobile();
         if (!checkMobile(mobile)) {
             errors.rejectValue("mobile", "Mobile");

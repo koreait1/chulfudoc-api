@@ -36,6 +36,12 @@ public class JoinService {
         member.setCredentialChangedAt(LocalDateTime.now());
         member.setAuthority(Authority.MEMBER);
 
+        String mobile = form.getMobile();
+        if (StringUtils.hasText(mobile)) {
+            mobile = mobile.replaceAll("\\D", "");
+            member.setMobile(mobile);
+        }
+
         String gid = form.getGid();
         gid = StringUtils.hasText(gid) ? gid : UUID.randomUUID().toString();
 
