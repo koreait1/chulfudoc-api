@@ -99,10 +99,22 @@ public class MemberController {
         return memberUtil.isLogin() ? ResponseEntity.ok(memberUtil.getMember()): ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @GetMapping("/test2")
-    public void test2() {
-        System.out.println("관리자만 접근 가능 - test2()");
+//    @PreAuthorize("hasAnyAuthority('ADMIN')")
+//    @GetMapping("/test2")
+//    public void test2() {
+//        System.out.println("관리자만 접근 가능 - test2()");
+//    }
+    @Operation(summary = "로그인한 회원의 회원정보를 수정 처리", method = "PATCH")
+    @PatchMapping("/update")
+    @PreAuthorize("isAuthenticated()")
+    public Member update(@Valid @RequestBody RequestProfile form, Errors errors) {
+        if (errors.hasErrors())throw new BadRequestException(utils.getErrorMessages(errors));
+    return null;
+}
+    @Operation(summary = "로그인 상태인 회원 정보를 수정 처리", method = "PATCH")
+    @PatchMapping("/update/PUUID")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public Member updateAdmin(@Valid @RequestBody RequestProfile form, Errors errors) {
+        return null;
     }
-
 }
