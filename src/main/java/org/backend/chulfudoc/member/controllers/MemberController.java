@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.global.exceptions.BadRequestException;
@@ -36,6 +37,8 @@ public class MemberController {
     private final MemberUtil memberUtil;
     private final Utils utils;
 
+    private final HttpServletRequest request;
+
     @Operation(summary = "회원가입처리", method = "POST")
     @ApiResponse(responseCode = "201", description = "회원가입 성공시 201로 응답, 검증 실패시 400")
     @PostMapping
@@ -56,25 +59,24 @@ public class MemberController {
      *
      * @return
      */
-    @Operation(summary = "회원 인증 처리", description = "아이디와 비밀번호로 인증한 후 회원 전용 요청을 보낼수 있는 토큰(JWT)을 발급")
+    @Operation(summary = "회원 인증 처리", description = "이메일과 비밀번호로 인증한 후 회원 전용 요청을 보낼수 있는 토큰(JWT)을 발급")
     @Parameters({
-            @Parameter(name="userId", required = true, description = "아이디"),
-            @Parameter(name="password", required = true, description = "비밀번호")
+            @Parameter(name="userId", required = true, description = "아이디, 일반 로그인 시 필수"),
+            @Parameter(name="password", required = true, description = "비밀번호, 일반 로그인시 필수"),
+            @Parameter(name="socialChannel", required = true, description = "소셜 로그인 채널 구분, 소셜 로그인 시 필수"),
+            @Parameter(name="socialToken", required = true, description = "소셜 로그인시 발급받은 회원 구분 값, 소셜 로그인시에만 필수")
     })
     @ApiResponse(responseCode = "200", description = "인증 성공시 토큰(JWT)발급")
-    @PostMapping("/token")
-    public String token(
-            @Valid @RequestBody(required = false) RequestLoginToken form,
-            @Valid @RequestBody(required = false) RequestSocialToken socialForm,
-            Errors errors) {
+    @PostMapping({"/token", "/social/token"})
+    public String token(@Valid @RequestBody RequestToken form, Errors errors) {
+        form.setSocial(request.getRequestURI().contains("/social"));
 
         tokenValidator.validate(form, errors);
-
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
 
-        return form == null ? tokenService.create(socialForm) : tokenService.create(form.getUserId());
+        return form.isSocial() ? tokenService.create(form.getSocialChannel(), form.getSocialToken()) : tokenService.create(form.getUserId());
     }
 
 //    @PreAuthorize("isAuthenticated()") // 로그인시에만 접근 가능
