@@ -41,5 +41,4 @@ public class MemberInfoService implements UserDetailsService {
             member.setProfileImage(fileInfoService.get(gid));
         }
     }
-
 }

@@ -3,23 +3,18 @@ package org.backend.chulfudoc.member.controllers;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.backend.chulfudoc.member.constants.SocialChannel;
 
 @Data
 public class RequestJoin {
 
-    @NotBlank
     private String gid;
 
     @NotBlank
     private String userId;
 
-    @NotBlank
-    @Size(min=8)
     private String password;
-
-    @NotBlank
     private String confirmPassword;
 
     @NotBlank
@@ -35,4 +30,6 @@ public class RequestJoin {
     @AssertTrue
     private boolean termsAgree;
 
+    private SocialChannel socialChannel;
+    private String socialToken;
 }
