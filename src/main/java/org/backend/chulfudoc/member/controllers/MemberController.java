@@ -13,6 +13,7 @@ import org.backend.chulfudoc.global.libs.Utils;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.jwt.TokenService;
 import org.backend.chulfudoc.member.libs.MemberUtil;
+import org.backend.chulfudoc.member.services.FindPwService;
 import org.backend.chulfudoc.member.services.JoinService;
 import org.backend.chulfudoc.member.validators.JoinValidator;
 import org.backend.chulfudoc.member.validators.TokenValidator;
@@ -38,6 +39,8 @@ public class MemberController {
     private final Utils utils;
 
     private final HttpServletRequest request;
+
+    private final FindPwService findPwService;
 
     @Operation(summary = "회원가입처리", method = "POST")
     @ApiResponse(responseCode = "201", description = "회원가입 성공시 201로 응답, 검증 실패시 400")
@@ -117,4 +120,33 @@ public class MemberController {
     public Member updateAdmin(@Valid @RequestBody RequestProfile form, Errors errors) {
         return null;
     }
+    /**
+     * 비밀번호 찾기
+     * @param form
+     * @param errors
+     * @return
+     */
+    @Operation(summary = "비밀번호 찾기", method = "POST", description = "userId + email 검증 후 메일로 임시 비밀번호 전송")
+    @Parameters({
+            @Parameter(name="userId", required = true, description = "아이디"),
+            @Parameter(name="email", required = true, description = "회원가입 시 인증받은 이메일")
+    })
+    @ApiResponse(responseCode = "200", description = "처리 성공")
+    @PostMapping("/findpw")
+    public ResponseEntity<?> findPw(@Valid @RequestBody RequestFindPw form, Errors errors) {
+        findPwService.process(form, errors); // 내부에서 validator + 초기화 + 메일 전송
+
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+//    @PreAuthorize("hasAnyAuthority('ADMIN')")
+//    @GetMapping("/test2")
+//    public void test2() {
+//        System.out.println("관리자만 접근 가능 - test2()");
+//    }
+
 }
