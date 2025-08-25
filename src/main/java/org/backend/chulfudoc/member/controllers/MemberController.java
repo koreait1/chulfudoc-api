@@ -102,24 +102,23 @@ public class MemberController {
         return memberUtil.isLogin() ? ResponseEntity.ok(memberUtil.getMember()): ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-//    @PreAuthorize("hasAnyAuthority('ADMIN')")
-//    @GetMapping("/test2")
-//    public void test2() {
-//        System.out.println("관리자만 접근 가능 - test2()");
-//    }
     @Operation(summary = "로그인한 회원의 회원정보를 수정 처리", method = "PATCH")
     @PatchMapping("/update")
     @PreAuthorize("isAuthenticated()")
     public Member update(@Valid @RequestBody RequestProfile form, Errors errors) {
+
         if (errors.hasErrors())throw new BadRequestException(utils.getErrorMessages(errors));
-    return null;
-}
+        return null;
+    }
+
     @Operation(summary = "로그인 상태인 회원 정보를 수정 처리", method = "PATCH")
     @PatchMapping("/update/PUUID")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Member updateAdmin(@Valid @RequestBody RequestProfile form, Errors errors) {
+
         return null;
     }
+
     /**
      * 비밀번호 찾기
      * @param form
@@ -133,8 +132,8 @@ public class MemberController {
     })
     @ApiResponse(responseCode = "200", description = "처리 성공")
     @PostMapping("/findpw")
-    public ResponseEntity<?> findPw(@Valid @RequestBody RequestFindPw form, Errors errors) {
-        findPwService.process(form, errors); // 내부에서 validator + 초기화 + 메일 전송
+    public ResponseEntity<Void> findPw(@Valid @RequestBody RequestFindPw form, Errors errors) {
+        findPwService.process(form, errors);// 내부에서 validator + 초기화 + 메일 전송
 
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));

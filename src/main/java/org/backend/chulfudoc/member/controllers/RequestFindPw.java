@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public record RequestFindPw(
         @NotBlank
-        @Email
-        String email,
+        String userId,
 
         @NotBlank
-        String userId
+        @Email
+        String email
 ) {}
