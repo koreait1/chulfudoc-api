@@ -21,7 +21,7 @@ public class EmailController {
     private final EmailVerifyService verifyService;
 
     @Operation(summary = "이메일 인증번호 발송", method = "GET")
-    @ApiResponse(description = "이메일 발송 여부 -> 성공 : 200 || 실패 : 400")
+    @ApiResponse(responseCode = "200",description = "이메일 발송 여부 -> 성공 : 200 || 실패 : 400")
     @Parameter(name = "email", required = true, description = "인증 번호를 받아볼 이메일")
     @GetMapping("/verify")
     public ResponseEntity<Void> sendVerifyEmail(@RequestParam("email") String email) {
@@ -29,7 +29,7 @@ public class EmailController {
     }
 
     @Operation(summary = "이메일 인증번호 검증", method = "GET")
-    @ApiResponse(description = "이메일 인증 성공 여부 -> 성공 : 200 || 실패 : 400")
+    @ApiResponse(responseCode = "200",description = "이메일 인증 성공 여부 -> 성공 : 200 || 실패 : 400")
     @Parameter(name="authNum", required = true, description = "이메일 인증번호")
     @GetMapping("/check")
     public ResponseEntity<Void> checkVerifiedEmail(@RequestParam("authNum") int authNum){
