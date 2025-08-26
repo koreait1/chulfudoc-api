@@ -10,11 +10,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.global.exceptions.BadRequestException;
 import org.backend.chulfudoc.global.libs.Utils;
+import org.backend.chulfudoc.global.search.ListData;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.jwt.TokenService;
 import org.backend.chulfudoc.member.libs.MemberUtil;
-import org.backend.chulfudoc.member.services.FindPwService;
 import org.backend.chulfudoc.member.services.JoinService;
+import org.backend.chulfudoc.member.services.MemberInfoService;
 import org.backend.chulfudoc.member.validators.JoinValidator;
 import org.backend.chulfudoc.member.validators.TokenValidator;
 import org.springframework.http.HttpStatus;
@@ -39,8 +40,7 @@ public class MemberController {
     private final Utils utils;
 
     private final HttpServletRequest request;
-
-    private final FindPwService findPwService;
+    private final MemberInfoService infoService;
 
     @Operation(summary = "회원가입처리", method = "POST")
     @ApiResponse(responseCode = "201", description = "회원가입 성공시 201로 응답, 검증 실패시 400")
@@ -82,13 +82,6 @@ public class MemberController {
         return form.isSocial() ? tokenService.create(form.getSocialChannel(), form.getSocialToken()) : tokenService.create(form.getUserId());
     }
 
-//    @PreAuthorize("isAuthenticated()") // 로그인시에만 접근 가능
-//    @GetMapping("/test1")
-//    public void test1(Principal principal) { // 사용자 이름만 가져옴
-//        System.out.println("principal:" + principal.getName());
-//        System.out.println("로그인시 접근 가능 - test1()");
-//    }
-
     /**
      * 로그인한 회원 정보 출력
      *
@@ -106,46 +99,24 @@ public class MemberController {
     @PatchMapping("/update")
     @PreAuthorize("isAuthenticated()")
     public Member update(@Valid @RequestBody RequestProfile form, Errors errors) {
-
         if (errors.hasErrors())throw new BadRequestException(utils.getErrorMessages(errors));
-        return null;
+    return null;
     }
 
     @Operation(summary = "로그인 상태인 회원 정보를 수정 처리", method = "PATCH")
     @PatchMapping("/update/PUUID")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Member updateAdmin(@Valid @RequestBody RequestProfile form, Errors errors) {
-
         return null;
     }
 
-    /**
-     * 비밀번호 찾기
-     * @param form
-     * @param errors
-     * @return
-     */
-    @Operation(summary = "비밀번호 찾기", method = "POST", description = "userId + email 검증 후 메일로 임시 비밀번호 전송")
-    @Parameters({
-            @Parameter(name="userId", required = true, description = "아이디"),
-            @Parameter(name="email", required = true, description = "회원가입 시 인증받은 이메일")
-    })
-    @ApiResponse(responseCode = "200", description = "처리 성공")
-    @PostMapping("/findpw")
-    public ResponseEntity<Void> findPw(@Valid @RequestBody RequestFindPw form, Errors errors) {
-        findPwService.process(form, errors);// 내부에서 validator + 초기화 + 메일 전송
+    @Operation(summary = "회원목록 조회", method = "GET")
+    @ApiResponse(responseCode = "200", description = "반환 값이 없을 경우 204(noContent) 반환")
+    @GetMapping("/list")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ListData<Member>> getMemberInfo(MemberSearch search){
+        ListData<Member> data = infoService.getMemberList(search);
 
-        if (errors.hasErrors()) {
-            throw new BadRequestException(utils.getErrorMessages(errors));
-        }
-
-        return ResponseEntity.ok().build();
+        return data != null ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
     }
-
-//    @PreAuthorize("hasAnyAuthority('ADMIN')")
-//    @GetMapping("/test2")
-//    public void test2() {
-//        System.out.println("관리자만 접근 가능 - test2()");
-//    }
-
 }
