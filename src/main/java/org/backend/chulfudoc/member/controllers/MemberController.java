@@ -15,7 +15,9 @@ import org.backend.chulfudoc.member.jwt.TokenService;
 import org.backend.chulfudoc.member.libs.MemberUtil;
 import org.backend.chulfudoc.member.services.FindPwService;
 import org.backend.chulfudoc.member.services.JoinService;
+import org.backend.chulfudoc.member.services.ProfileUpdateService;
 import org.backend.chulfudoc.member.validators.JoinValidator;
+import org.backend.chulfudoc.member.validators.ProfileValidator;
 import org.backend.chulfudoc.member.validators.TokenValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,9 @@ public class MemberController {
 
     private final TokenValidator tokenValidator;
     private final TokenService tokenService;
+
+    private final ProfileValidator profileValidator;
+    private final ProfileUpdateService profileUpdateService;
 
     private final MemberUtil memberUtil;
     private final Utils utils;
@@ -107,8 +112,10 @@ public class MemberController {
     @PreAuthorize("isAuthenticated()")
     public Member update(@Valid @RequestBody RequestProfile form, Errors errors) {
 
+        profileValidator.validate(form, errors);
+
         if (errors.hasErrors())throw new BadRequestException(utils.getErrorMessages(errors));
-        return null;
+        return profileUpdateService.process(form);
     }
 
     @Operation(summary = "로그인 상태인 회원 정보를 수정 처리", method = "PATCH")
@@ -121,19 +128,21 @@ public class MemberController {
 
     /**
      * 비밀번호 찾기
-     * @param form
      * @param errors
      * @return
      */
-    @Operation(summary = "비밀번호 찾기", method = "POST", description = "userId + email 검증 후 메일로 임시 비밀번호 전송")
+    @Operation(summary = "비밀번호 찾기", method = "GET", description = "userId + email 검증 후 메일로 임시 비밀번호 전송")
     @Parameters({
             @Parameter(name="userId", required = true, description = "아이디"),
             @Parameter(name="email", required = true, description = "회원가입 시 인증받은 이메일")
     })
     @ApiResponse(responseCode = "200", description = "처리 성공")
-    @PostMapping("/findpw")
-    public ResponseEntity<Void> findPw(@Valid @RequestBody RequestFindPw form, Errors errors) {
-        findPwService.process(form, errors);// 내부에서 validator + 초기화 + 메일 전송
+    @GetMapping("/findpw")
+    public ResponseEntity<RequestFindPw> findPw(@RequestParam String userId, @RequestParam String email, Errors errors) {
+
+        RequestFindPw form = new RequestFindPw(userId, email);
+        System.out.println(form);
+        findPwService.process(form, errors);
 
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
