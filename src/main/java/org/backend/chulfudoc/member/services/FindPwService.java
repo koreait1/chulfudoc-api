@@ -27,6 +27,7 @@ public class FindPwService {
     private final Utils utils;
 
     public void process(RequestFindPw form, Errors errors) {
+        System.out.println("프로세스 시작");
         validator.validate(form, errors);
         if (errors.hasErrors()) { // 유효성 검사 실패시에는 처리 중단
             return;
@@ -34,7 +35,6 @@ public class FindPwService {
 
         // 비밀번호 초기화
         reset(form.userId(), form.email());
-
     }
 
     public void reset(String userId,String email) {
@@ -47,6 +47,7 @@ public class FindPwService {
         repository.saveAndFlush(member);
 
         /* 비밀번호 초기화 E */
+
         EmailMessage emailMessage = new EmailMessage(
                 email,
                 utils.getMessage("Email.password.reset"),
