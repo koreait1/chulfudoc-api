@@ -3,7 +3,6 @@ package org.backend.chulfudoc.board.services.configs;
 import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.board.entities.Board;
 import org.backend.chulfudoc.board.exceptions.BoardNotFoundException;
-import org.backend.chulfudoc.board.repositories.BoardDataRepository;
 import org.backend.chulfudoc.board.repositories.BoardRepository;
 import org.backend.chulfudoc.member.libs.MemberUtil;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import java.time.LocalDateTime;
 public class BoardConfigDeleteService {
 
     private final BoardRepository boardRepository;
-    private final BoardDataRepository boardDataRepository;
     private final MemberUtil memberUtil;
 
     /**
