@@ -131,4 +131,20 @@ public class MemberController {
         System.out.println("관리자만 접근 가능 - test2()");
     }
 
+    @Operation(summary = "로그인한 회원의 회원 정보를 수정 처리", method = "PATCH", description = "")
+    @PatchMapping("/update")
+    @PreAuthorize("isAuthenticated()")
+    public Member update(@Valid @RequestBody RequestProfile form, Errors errors) {
+
+        if (errors.hasErrors()){
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+        return null;
+    }
+
+//    @PatchMapping("/update/{seq}")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    public Member updateAdmin() {
+//
+//    }
 }
