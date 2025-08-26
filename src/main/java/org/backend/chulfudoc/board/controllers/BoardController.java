@@ -149,6 +149,17 @@ public class BoardController {
         return infoService.getList(search);
     }
 
+
+    @Operation(summary = "사용자 별 목록 조회, 여러 게시판의 통합 검색", method = "GET", description = "/api/v1/mypage/search : 여러 게시판 통합 검색")
+    @ApiResponse(responseCode = "200", description = "게시글 목록과 페이징을 위한 데이터가 함께 출력")
+    @Parameter(name="puuid", required = true, description = "사용자 고유 식별 번호")
+    @GetMapping({"mypage/list", "mypage/search"})
+    public ListData<BoardData> getMyList(@ModelAttribute BoardSearch search, Model model) {
+        if (!memberUtil.isLogin())
+            return new ListData<>();
+        return infoService.getMyList(search);
+    }
+
     @Operation(summary = "게시글 등록/수정 처리", method = "POST, PATCH", description = "POST로 요청을 보내면 등록 처리, PATCH로 요청을 보내면 수정 처리, 수정 처리 요청을 보낼 경우 seq(게시글 등록번호) 필수 항목")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "게시글 등록 완료"),

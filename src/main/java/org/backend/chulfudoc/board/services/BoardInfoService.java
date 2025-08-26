@@ -81,13 +81,45 @@ public class BoardInfoService {
         if (!memberUtil.isLogin()) {
             return new ListData<>();
         }
+        String puuid = memberUtil.getMember().getPUUID();
+        int page = Math.max(search.getPage(), 1);
+        int limit = search.getLimit();
+        limit = limit < 1 ? 20 : limit;
+        int offset = (page - 1) * limit; // 레코드 시작 번호
 
-        search = Objects.requireNonNullElseGet(search, BoardSearch::new);
+        /* 검색 조건 처리 S */
+        List<String> userIds = search.getUserId();
 
-        Member member = memberUtil.getMember();
-        search.setUserId(List.of(member.getUserId()));
+        QBoardData boardData = QBoardData.boardData;
+        BooleanBuilder andBuilder = new BooleanBuilder();
 
-        return getList(search);
+        andBuilder.and(boardData.member.PUUID.eq(puuid));
+        // 회원 아이디로 게시글 조회
+        if (userIds != null && !userIds.isEmpty()) {
+            andBuilder.and(boardData.member.userId.in(userIds));
+        }
+
+        /* 검색 조건 처리 E */
+
+        List<BoardData> items = queryFactory.selectFrom(boardData)
+                .leftJoin(boardData.member)
+                .fetchJoin()
+                .where(andBuilder)
+                .offset(offset)
+                .limit(limit)
+                .orderBy(boardData.notice.desc(), boardData.createdAt.desc())
+                .fetch();
+
+        int total = (int)boardDataRepository.count(andBuilder);
+
+        // 추가 정보 처리
+        items.forEach(this::addInfo);
+
+        int range = 10;
+
+        Pagination pagination = new Pagination(page, total, range, limit, request);
+
+        return new ListData<>(items, pagination);
     }
 
     /**
