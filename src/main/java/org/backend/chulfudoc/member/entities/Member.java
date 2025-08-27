@@ -53,7 +53,6 @@ public class Member extends BaseEntity implements Serializable {
 
     private LocalDateTime expired; // 계정 만료 일자, null이면 만료 X
 
-    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime credentialChangedAt; // 비밀번호 변경 일시
 
     @Enumerated(EnumType.STRING)

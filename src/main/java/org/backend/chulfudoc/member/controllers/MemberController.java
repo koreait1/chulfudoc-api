@@ -118,6 +118,7 @@ public class MemberController {
     @PatchMapping("/update/PUUID")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Member updateAdmin(@Valid @RequestBody RequestProfile form, Errors errors) {
+
         return null;
     }
 
@@ -133,10 +134,7 @@ public class MemberController {
     })
     @ApiResponse(responseCode = "200", description = "처리 성공")
     @GetMapping("/findpw")
-    public ResponseEntity<RequestFindPw> findPw(@RequestParam String userId, @RequestParam String email, Errors errors) {
-
-        RequestFindPw form = new RequestFindPw(userId, email);
-        System.out.println(form);
+    public ResponseEntity<Void> findPw(@Valid @ModelAttribute RequestFindPw form, Errors errors) {
         findPwService.process(form, errors);
 
         if (errors.hasErrors()) {

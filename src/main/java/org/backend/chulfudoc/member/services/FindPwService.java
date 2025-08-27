@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.global.email.entities.EmailMessage;
 import org.backend.chulfudoc.global.email.services.EmailSendService;
 import org.backend.chulfudoc.global.libs.Utils;
-import org.backend.chulfudoc.member.controllers.FindPwValidator;
 import org.backend.chulfudoc.member.controllers.RequestFindPw;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.exceptions.MemberNotFoundException;

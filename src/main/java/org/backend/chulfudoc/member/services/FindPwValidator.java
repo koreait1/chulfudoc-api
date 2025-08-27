@@ -1,6 +1,7 @@
-package org.backend.chulfudoc.member.controllers;
+package org.backend.chulfudoc.member.services;
 
 import lombok.RequiredArgsConstructor;
+import org.backend.chulfudoc.member.controllers.RequestFindPw;
 import org.backend.chulfudoc.member.repositories.MemberRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
