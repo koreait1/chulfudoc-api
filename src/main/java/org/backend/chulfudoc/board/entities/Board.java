@@ -72,4 +72,10 @@ public class Board extends BaseEntity implements Serializable {
 
     }
 
+    @Column(nullable = false)
+    private boolean deleted = false; // 게시판 소프트 삭제 여부
+
+    @Column(length = 100)
+    private String deletedBy; // 누가 삭제했는지
+
 }
