@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.global.email.entities.EmailMessage;
 import org.backend.chulfudoc.global.email.services.EmailSendService;
 import org.backend.chulfudoc.global.libs.Utils;
+import org.backend.chulfudoc.member.controllers.RequestFindId;
 import org.backend.chulfudoc.member.controllers.RequestFindPw;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.exceptions.MemberNotFoundException;
@@ -17,9 +18,9 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class FindPwService {
+public class FindService {
 
-    private final FindPwValidator validator;
+    private final FindValidator validator;
     private final MemberRepository repository;
     private final EmailSendService sendService;
     private final PasswordEncoder encoder;
@@ -54,5 +55,21 @@ public class FindPwService {
         Map<String, Object> tplData = new HashMap<>();
         tplData.put("password", newPassword);
         sendService.sendEmail(emailMessage, "password_reset", tplData);
+    }
+
+
+    /* 아이디 조회 */
+    public String process(RequestFindId form, Errors errors) {
+        validator.validate(form, errors);
+        if (errors.hasErrors()) { // 유효성 검사 실패 시 중단
+            return null;
+        }
+        String name  = form.name().trim();
+        String email = form.email().trim();
+
+        Member member = repository.findByNameAndEmail(name, email)
+                .orElseThrow(MemberNotFoundException::new);
+
+        return member.getUserId();
     }
 }

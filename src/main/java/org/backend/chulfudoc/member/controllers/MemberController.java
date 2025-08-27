@@ -14,7 +14,7 @@ import org.backend.chulfudoc.global.search.ListData;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.jwt.TokenService;
 import org.backend.chulfudoc.member.libs.MemberUtil;
-import org.backend.chulfudoc.member.services.FindPwService;
+import org.backend.chulfudoc.member.services.FindService;
 import org.backend.chulfudoc.member.services.JoinService;
 import org.backend.chulfudoc.member.services.MemberInfoService;
 import org.backend.chulfudoc.member.services.ProfileUpdateService;
@@ -26,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public class MemberController {
     private final HttpServletRequest request;
     private final MemberInfoService infoService;
 
-    private final FindPwService findPwService;
+    private final FindService findService;
 
     @Operation(summary = "회원가입처리", method = "POST")
     @ApiResponse(responseCode = "201", description = "회원가입 성공시 201로 응답, 검증 실패시 400")
@@ -135,13 +137,32 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "처리 성공")
     @GetMapping("/findpw")
     public ResponseEntity<Void> findPw(@Valid @ModelAttribute RequestFindPw form, Errors errors) {
-        findPwService.process(form, errors);
+        findService.process(form, errors);
 
         if (errors.hasErrors()) {
             throw new BadRequestException(utils.getErrorMessages(errors));
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "아이디 찾기", description = "name + email 검증 후 userId 반환")
+    @Parameters({
+            @Parameter(name="name", required = true, description = "회원 이름"),
+            @Parameter(name="email", required = true, description = "회원가입 시 인증받은 이메일")
+    })
+    @GetMapping("/findId")
+    public ResponseEntity<Map<String, String>> findId(
+            @Valid @ModelAttribute RequestFindId form,
+            Errors errors) {
+
+        String userId = findService.process(form, errors); // validator 통해 검증
+
+        if (errors.hasErrors()) {
+            throw new BadRequestException(utils.getErrorMessages(errors));
+        }
+
+        return ResponseEntity.ok(Map.of("userId", userId));
     }
 
 //    @PreAuthorize("hasAnyAuthority('ADMIN')")

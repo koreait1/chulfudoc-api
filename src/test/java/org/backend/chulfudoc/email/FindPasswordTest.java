@@ -1,6 +1,6 @@
 package org.backend.chulfudoc.email;
 
-import org.backend.chulfudoc.member.services.FindPwService;
+import org.backend.chulfudoc.member.services.FindService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class FindPasswordTest {
 
     @Autowired
-    private FindPwService service;
+    private FindService service;
 
     @Autowired
     private MockMvc mockMvc;
