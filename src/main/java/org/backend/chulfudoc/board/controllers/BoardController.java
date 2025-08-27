@@ -14,6 +14,7 @@ import org.backend.chulfudoc.board.entities.Board;
 import org.backend.chulfudoc.board.entities.BoardData;
 import org.backend.chulfudoc.board.entities.Comment;
 import org.backend.chulfudoc.board.services.*;
+import org.backend.chulfudoc.board.services.configs.BoardConfigDeleteService;
 import org.backend.chulfudoc.board.services.configs.BoardConfigInfoService;
 import org.backend.chulfudoc.board.services.configs.BoardConfigUpdateService;
 import org.backend.chulfudoc.board.validators.BoardConfigValidator;
@@ -53,6 +54,7 @@ public class BoardController {
     private final BoardValidator boardValidator;
     private final BoardConfigValidator boardConfigValidator;
     private final BoardConfigUpdateService configUpdateService;
+    private final BoardConfigDeleteService configDeleteService;
     private final MemberUtil memberUtil;
     private final HttpServletRequest request;
     private final MemberSessionService session;
@@ -296,6 +298,22 @@ public class BoardController {
         }
 
         session.set(confirmKey, true); // 비회원 비밀번호 확인 완료
+    }
+
+    @Operation(
+            summary = "게시판 삭제(소프트 삭제)",
+            method = "DELETE",
+            description = "게시판을 소프트 삭제, softDelete=true 일 시 모든 게시글도 소프트 삭제"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "404", description = "게시판을 찾을 수 없습니다."),
+            @ApiResponse(responseCode = "401", description = "권한이 없습니다.")
+    })
+    @DeleteMapping("/config/{bid}")
+    public ResponseEntity<Void> deleteBoardConfig(@PathVariable("bid") String bid, @RequestParam(name = "softDelete", defaultValue = "false") boolean softDelete) {
+        configDeleteService.softDeleteBoard(bid, softDelete);
+        return ResponseEntity.noContent().build();
     }
 
     private void commonProcess(Long seq, String mode, Model model)  {
