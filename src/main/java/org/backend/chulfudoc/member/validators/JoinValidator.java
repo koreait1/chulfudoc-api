@@ -1,6 +1,7 @@
 package org.backend.chulfudoc.member.validators;
 
 import lombok.RequiredArgsConstructor;
+import org.backend.chulfudoc.global.email.services.EmailVerifyService;
 import org.backend.chulfudoc.global.validators.MobileValidator;
 import org.backend.chulfudoc.global.validators.PasswordValidator;
 import org.backend.chulfudoc.member.controllers.RequestJoin;
@@ -18,6 +19,7 @@ import org.springframework.validation.Validator;
 public class JoinValidator implements Validator, PasswordValidator, MobileValidator {
 
     private final MemberRepository repository;
+    private final EmailVerifyService emailVerifyService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -64,6 +66,14 @@ public class JoinValidator implements Validator, PasswordValidator, MobileValida
         // 2. 이메일 중복 여부
         if (repository.existsByEmail(form.getEmail())) {
             errors.rejectValue("email", "Duplicated");
+        }
+
+        // 이메일 인증 여부
+        if (!errors.hasFieldErrors("authNum")) { // 이미 @NotBlank로 걸리면 여기 안 옴
+            int code = Integer.parseInt(form.getAuthNum());
+            if (!emailVerifyService.check(code)) {
+                errors.rejectValue("authNum", "Invalid");
+            }
         }
 
 
