@@ -32,7 +32,7 @@ public class FindIdTest {
     void setUp() {
         memberRepository.deleteAll();
 
-        // ✅ 테스트용 회원 데이터 저장
+        // 테스트용 회원 데이터 저장
         Member m = new Member();
         // TODO: 엔터티 필드에 맞게 채우세요 (아래 3개는 반드시 들어가야 함)
         m.setUserId("chltkdwns");
@@ -43,7 +43,7 @@ public class FindIdTest {
     }
 
     @Test
-    void findid_200() throws Exception {
+    void test1() throws Exception {
         mvc.perform(get("/api/v1/member/findId")
                         .param("name", "김수정")
                         .param("email", "chtkdldjs43@naver.com")
@@ -54,7 +54,7 @@ public class FindIdTest {
     }
 
     @Test
-    void 아이디찾기_회원없음_400() throws Exception {
+    void test2() throws Exception {
         mvc.perform(get("/member/findId")
                         .param("name", "아무나")
                         .param("email", "any@example.com")
