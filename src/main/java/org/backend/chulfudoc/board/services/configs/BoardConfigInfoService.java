@@ -125,7 +125,7 @@ public class BoardConfigInfoService {
      */
     private void addInfo(Board item) {
 
-        boolean writable = true, listable = true, commentable = true;
+        boolean writable = true, listable = true, commentable = true, viewable = true;
 
         Authority writeAuthority = item.getWriteAuthority();
         if (writeAuthority != Authority.ALL && ((writeAuthority == Authority.MEMBER && !memberUtil.isLogin()) || (writeAuthority == Authority.ADMIN && !memberUtil.isAdmin()))) {
@@ -137,6 +137,11 @@ public class BoardConfigInfoService {
             listable = false;
         }
 
+        Authority viewAuthority = item.getViewAuthority();
+        if (viewAuthority != Authority.ALL && ((viewAuthority == Authority.MEMBER && !memberUtil.isLogin()) || (viewAuthority == Authority.ADMIN && !memberUtil.isAdmin()))) {
+            viewable = false;
+        }
+
         Authority commentAuthority = item.getCommentAuthority();
         if (commentAuthority != Authority.ALL && ((commentAuthority == Authority.MEMBER && !memberUtil.isLogin()) || (commentAuthority == Authority.ADMIN && !memberUtil.isAdmin()))) {
             commentable = false;
@@ -145,6 +150,7 @@ public class BoardConfigInfoService {
         item.setWritable(writable);
         item.setListable(listable);
         item.setCommentable(commentable);
+        item.setViewable(viewable);
 
     }
 
