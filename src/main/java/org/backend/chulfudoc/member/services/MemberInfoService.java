@@ -80,12 +80,12 @@ public class MemberInfoService implements UserDetailsService {
             StringExpression fields = null;
             if (searchOption.equals("NAME")) {
                 fields = member.name;
+            } else if (searchOption.equals("ID")) {
+                fields = member.userId;
             } else if (searchOption.equals("EMAIL")) {
                 fields = member.email;
             } else if (searchOption.equals("MOBILE")) {
                 fields = member.mobile;
-            } else if (searchOption.equals("ID")) {
-                fields = member.userId;
             } else {
                 fields = member.name.concat(member.email)
                         .concat(member.mobile).concat(member.userId);

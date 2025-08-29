@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.global.email.entities.EmailMessage;
 import org.backend.chulfudoc.global.libs.Utils;
 import org.backend.chulfudoc.member.libs.MemberUtil;
+import org.backend.chulfudoc.member.repositories.MemberRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +20,15 @@ public class EmailVerifyService {
     private final EmailSendService service;
     private final MemberUtil memberUtil;
     private final RedisTemplate<String, Integer> redisTemplate;
+    private final MemberRepository repository;
 
     // 인증 번호 생성 및 발송
     public boolean sendCode(String email) {
         String key = memberUtil.getUserHash(); // 비회원 시도 : randomUuid || 회원 시도 : PUUID
+
+        if(repository.existsByEmail(email)){
+            return false;
+        }
 
         // key 값 확인 용
         System.out.println("EmailVerifyService Key : " + key);
@@ -70,7 +76,13 @@ public class EmailVerifyService {
         if (authNum != null) {
             System.out.println("인증 번호: " + authNum);
 
-            return code == authNum;
+            boolean result = false;
+            if(code == authNum){
+                result = true;
+                redisTemplate.delete(hash);
+            }
+
+            return result;
         } else {
             System.out.println("인증번호 없음(기한 만료)");
 
