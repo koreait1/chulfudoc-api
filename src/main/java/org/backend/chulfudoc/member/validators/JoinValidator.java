@@ -68,15 +68,6 @@ public class JoinValidator implements Validator, PasswordValidator, MobileValida
             errors.rejectValue("email", "Duplicated");
         }
 
-        // 이메일 인증 여부
-        if (!errors.hasFieldErrors("authNum")) { // 이미 @NotBlank로 걸리면 여기 안 옴
-            int code = Integer.parseInt(form.getAuthNum());
-            if (!emailVerifyService.check(code)) {
-                errors.rejectValue("authNum", "Invalid");
-            }
-        }
-
-
         if (!isSocial) {
             // 3. 비밀번호 복잡성
             if (!checkAlpha(password, false) || !checkNumber(password) || !checkSpecialChars(password)) {
