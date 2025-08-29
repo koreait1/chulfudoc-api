@@ -73,7 +73,7 @@ public class BoardControllerTest {
     )
     void test1() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/board/mypage/search")
-                        .param("poster", "user01")
+                        .param("puuid", "sdfs-sdfs-qwer-wert")
                         .param("page", "1")
                         .param("limit", "20"))
                 .andDo(print())

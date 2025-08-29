@@ -103,16 +103,27 @@ public class BoardInfoService {
      * @param search
      * @return
      */
-    public ListData<BoardData> getMyList(BoardSearch search) {
+    public ListData<BoardData> getMyList(String puuid, BoardSearch search) {
         if (!memberUtil.isLogin()) {
-            return new ListData<>();
+            int page = 1, limit = 20, range = 10, total = 0;
+            Pagination pagination = new Pagination(page, total, range, limit, request);
+            return new ListData<>(java.util.Collections.emptyList(), pagination);
         }
-        String puuid = memberUtil.getMember().getPUUID();
         int page = Math.max(search.getPage(), 1);
         int limit = search.getLimit();
         limit = limit < 1 ? 20 : limit;
         int offset = (page - 1) * limit; // 레코드 시작 번호
 
+        if (!StringUtils.hasText(puuid)){
+            Member me = memberUtil.getMember();
+            if (me != null && org.springframework.util.StringUtils.hasText(me.getPUUID())) {
+                puuid = me.getPUUID();
+            } else {
+                int range = 10, total = 0;
+                Pagination pagination = new Pagination(page, total, range, limit, request);
+                return new ListData<>(java.util.Collections.emptyList(), pagination);
+            }
+        }
         /* 검색 조건 처리 S */
         List<String> userIds = search.getUserId();
 
@@ -120,16 +131,12 @@ public class BoardInfoService {
         BooleanBuilder andBuilder = new BooleanBuilder();
 
         andBuilder.and(boardData.member.PUUID.eq(puuid));
-        // 회원 아이디로 게시글 조회
-        if (userIds != null && !userIds.isEmpty()) {
-            andBuilder.and(boardData.member.userId.in(userIds));
-        }
 
         /* 검색 조건 처리 E */
 
         List<BoardData> items = queryFactory.selectFrom(boardData)
-                .leftJoin(boardData.member)
-                .fetchJoin()
+                .leftJoin(boardData.member).fetchJoin()
+                .leftJoin(boardData.board).fetchJoin()
                 .where(andBuilder)
                 .offset(offset)
                 .limit(limit)
