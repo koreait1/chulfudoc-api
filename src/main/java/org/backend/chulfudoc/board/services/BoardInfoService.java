@@ -84,6 +84,20 @@ public class BoardInfoService {
     }
 
     /**
+     * 특정 게시판의 목록 조회
+     *
+     * @param bid
+     * @param search
+     * @return
+     */
+    public ListData<BoardData> getList(String bid, BoardSearch search) {
+        search = Objects.requireNonNullElseGet(search, BoardSearch::new);
+        search.setBid(List.of(bid));
+
+        return getList(search);
+    }
+
+    /**
      * 내가 쓴 게시글 목록
      *
      * @param search
@@ -132,20 +146,6 @@ public class BoardInfoService {
         Pagination pagination = new Pagination(page, total, range, limit, request);
 
         return new ListData<>(items, pagination);
-    }
-
-    /**
-     * 특정 게시판의 목록 조회
-     *
-     * @param bid
-     * @param search
-     * @return
-     */
-    public ListData<BoardData> getList(String bid, BoardSearch search) {
-        search = Objects.requireNonNullElseGet(search, BoardSearch::new);
-        search.setBid(List.of(bid));
-
-        return getList(search);
     }
 
     /**

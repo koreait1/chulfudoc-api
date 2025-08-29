@@ -152,7 +152,7 @@ public class BoardController {
     }
 
 
-    @Operation(summary = "사용자 별 목록 조회, 여러 게시판의 통합 검색", method = "GET", description = "/api/v1/mypage/search : 여러 게시판 통합 검색")
+    @Operation(summary = "사용자 별 목록 조회, 여러 게시판의 통합 검색", method = "GET", description = "/api/v1/mypage/search : 해당 유저가 쓴 모든 글 찾기")
     @ApiResponse(responseCode = "200", description = "게시글 목록과 페이징을 위한 데이터가 함께 출력")
     @Parameter(name="puuid", required = true, description = "사용자 고유 식별 번호")
     @GetMapping({"/mypage/list", "/mypage/search"})
