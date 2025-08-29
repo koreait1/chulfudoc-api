@@ -32,7 +32,4 @@ public class RequestJoin {
 
     private SocialChannel socialChannel;
     private String socialToken;
-
-    @NotBlank
-    private String authNum;
 }
