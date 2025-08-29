@@ -68,7 +68,6 @@ public class JoinValidator implements Validator, PasswordValidator, MobileValida
             errors.rejectValue("email", "Duplicated");
         }
 
-
         if (!isSocial) {
             // 3. 비밀번호 복잡성
             if (!checkAlpha(password, false) || !checkNumber(password) || !checkSpecialChars(password)) {
