@@ -76,7 +76,13 @@ public class EmailVerifyService {
         if (authNum != null) {
             System.out.println("인증 번호: " + authNum);
 
-            return code == authNum;
+            boolean result = false;
+            if(code == authNum){
+                result = true;
+                redisTemplate.delete(hash);
+            }
+
+            return result;
         } else {
             System.out.println("인증번호 없음(기한 만료)");
 
