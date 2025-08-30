@@ -5,6 +5,7 @@ import org.backend.chulfudoc.member.entities.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, String>, QuerydslPredicateExecutor<Member> {
@@ -12,9 +13,12 @@ public interface MemberRepository extends JpaRepository<Member, String>, Queryds
     Optional<Member> findBySocialChannelAndSocialToken(SocialChannel channel, String socialToken);
     Optional<Member> findByUserIdAndEmail(String userId, String email);
     Optional<Member> findByNameAndEmail(String name, String email);
+    Optional<Member> findByUserIdAndDeletedAtIsNull(String userId);
 
     boolean existsByEmail(String email);
     boolean existsByUserId(String userId);
     boolean existsByUserIdAndEmail(String userId, String email);
     boolean existsByNameAndEmail(String name, String email);
+
+    void deleteAllByDeletedAtBefore(LocalDateTime threshold);
 }

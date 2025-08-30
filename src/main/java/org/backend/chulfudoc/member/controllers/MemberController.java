@@ -14,6 +14,7 @@ import org.backend.chulfudoc.global.search.ListData;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.jwt.TokenService;
 import org.backend.chulfudoc.member.libs.MemberUtil;
+import org.backend.chulfudoc.member.repositories.MemberRepository;
 import org.backend.chulfudoc.member.services.FindService;
 import org.backend.chulfudoc.member.services.JoinService;
 import org.backend.chulfudoc.member.services.MemberInfoService;
@@ -27,6 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
@@ -51,6 +53,8 @@ public class MemberController {
     private final MemberInfoService infoService;
 
     private final FindService findService;
+
+    private final MemberRepository memberRepository;
 
     @Operation(summary = "회원가입처리", method = "POST")
     @ApiResponse(responseCode = "201", description = "회원가입 성공시 201로 응답, 검증 실패시 400")
@@ -185,5 +189,23 @@ public class MemberController {
         ListData<Member> data = infoService.getMemberList(search);
 
         return data != null ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "회원 탈퇴", description = "현재 로그인 회원의 deletedAt을 현재 시간으로 설정")
+    @ApiResponse(responseCode = "200", description = "탈퇴 처리 완료")
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/delete")
+    public ResponseEntity<?> delete() {
+        Member member = memberUtil.getMember();
+        if (member == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "인증이 필요합니다."));
+        }
+
+        //삭제 처리
+        member.setDeletedAt(LocalDateTime.now());
+        memberRepository.saveAndFlush(member);
+
+
+        return ResponseEntity.ok(Map.of("message", "탈퇴 처리가 완료되었습니다."));
     }
 }
