@@ -23,7 +23,7 @@ public class Member extends BaseEntity implements Serializable {
     // 변경하실때 오늘의 할일 쪽 구글 시트에 클래스랑 작업자 적어주세요
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String PUUID;
+    private String puuid;
 
     @Column(length = 50, unique = true, nullable = false)
     private String userId;

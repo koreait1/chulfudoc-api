@@ -24,7 +24,7 @@ public class EmailVerifyService {
 
     // 인증 번호 생성 및 발송
     public boolean sendCode(String email) {
-        String key = memberUtil.getUserHash(); // 비회원 시도 : randomUuid || 회원 시도 : PUUID
+        String key = memberUtil.getUserHash(); // 비회원 시도 : randomUuid || 회원 시도 : puuid
 
         if(repository.existsByEmail(email)){
             return false;
