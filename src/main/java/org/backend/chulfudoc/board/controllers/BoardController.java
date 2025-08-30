@@ -167,8 +167,8 @@ public class BoardController {
     @Parameter(name="puuid", required = true, description = "사용자 고유 식별 번호")
     @GetMapping("/mypage/search")
     public ListData<BoardData> getMyList(@RequestParam("puuid") String puuid, @ModelAttribute BoardSearch search, Model model) {
-
-        System.out.println("받은 puuid: " + puuid);
+        if (!memberUtil.isLogin())
+            return new ListData<>();
         return infoService.getMyList(puuid,search);
     }
 
