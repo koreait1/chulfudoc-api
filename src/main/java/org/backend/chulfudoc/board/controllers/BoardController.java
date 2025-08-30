@@ -29,6 +29,7 @@ import org.backend.chulfudoc.member.services.MemberSessionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -166,8 +167,8 @@ public class BoardController {
     @Parameter(name="puuid", required = true, description = "사용자 고유 식별 번호")
     @GetMapping("/mypage/search")
     public ListData<BoardData> getMyList(@RequestParam("puuid") String puuid, @ModelAttribute BoardSearch search, Model model) {
-        if (!memberUtil.isLogin())
-            return new ListData<>();
+
+        System.out.println("받은 puuid: " + puuid);
         return infoService.getMyList(puuid,search);
     }
 
