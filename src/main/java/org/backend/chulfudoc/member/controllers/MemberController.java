@@ -117,7 +117,7 @@ public class MemberController {
     }
 
     @Operation(summary = "로그인 상태인 회원 정보를 수정 처리", method = "PATCH")
-    @PatchMapping("/update/PUUID")
+    @PatchMapping("/update/puuid")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Member updateAdmin(@Valid @RequestBody RequestProfile form, Errors errors) {
 
