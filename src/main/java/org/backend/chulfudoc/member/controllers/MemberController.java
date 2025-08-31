@@ -14,10 +14,7 @@ import org.backend.chulfudoc.global.search.ListData;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.jwt.TokenService;
 import org.backend.chulfudoc.member.libs.MemberUtil;
-import org.backend.chulfudoc.member.services.FindService;
-import org.backend.chulfudoc.member.services.JoinService;
-import org.backend.chulfudoc.member.services.MemberInfoService;
-import org.backend.chulfudoc.member.services.ProfileUpdateService;
+import org.backend.chulfudoc.member.services.*;
 import org.backend.chulfudoc.member.validators.JoinValidator;
 import org.backend.chulfudoc.member.validators.ProfileValidator;
 import org.backend.chulfudoc.member.validators.TokenValidator;
@@ -51,6 +48,8 @@ public class MemberController {
     private final MemberInfoService infoService;
 
     private final FindService findService;
+
+    private final MemberDeleteService memberDeleteService;
 
     @Operation(summary = "회원가입처리", method = "POST")
     @ApiResponse(responseCode = "201", description = "회원가입 성공시 201로 응답, 검증 실패시 400")
@@ -185,5 +184,15 @@ public class MemberController {
         ListData<Member> data = infoService.getMemberList(search);
 
         return data != null ? ResponseEntity.ok(data) : ResponseEntity.noContent().build();
+    }
+
+    // 회원탈퇴
+    @Operation(summary = "회원 탈퇴", description = "현재 로그인 회원의 deletedAt을 현재 시간으로 설정")
+    @ApiResponse(responseCode = "200", description = "탈퇴 처리 완료")
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/delete")
+    public ResponseEntity<?> delete() {
+        memberDeleteService.deleteCurrentMember();
+        return ResponseEntity.ok(Map.of("message", "탈퇴 처리가 완료되었습니다."));
     }
 }

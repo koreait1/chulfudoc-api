@@ -9,6 +9,7 @@ import org.backend.chulfudoc.member.controllers.RequestFindPw;
 import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.exceptions.MemberNotFoundException;
 import org.backend.chulfudoc.member.repositories.MemberRepository;
+import org.backend.chulfudoc.member.validators.FindValidator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
