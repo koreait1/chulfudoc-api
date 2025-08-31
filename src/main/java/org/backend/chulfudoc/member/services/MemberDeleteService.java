@@ -17,13 +17,11 @@ public class MemberDeleteService {
 
     private final MemberUtil memberUtil;
     private final MemberRepository memberRepository;
-    private final TokenService tokenService; // 프로젝트에 이미 존재(필요시 주입만)
+    private final TokenService tokenService;
 
     /**
-     * 현재 로그인한 회원을 소프트 삭제한다.
-     * - 이미 탈퇴되어 있으면 예외
+     * 현재 로그인한 회원을 삭제
      * - 삭제 시각 기록 후 저장
-     * - (선택) 토큰 무효화 처리
      */
     @Transactional
     public void deleteCurrentMember() {

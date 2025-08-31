@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
+import org.backend.chulfudoc.global.exceptions.BadRequestException;
 import org.backend.chulfudoc.global.exceptions.UnAuthorizedException;
 import org.backend.chulfudoc.global.libs.Utils;
 import org.backend.chulfudoc.member.MemberInfo;
@@ -62,6 +63,10 @@ public class TokenService {
         MemberInfo userDetails = (MemberInfo)infoService.loadUserByUsername(userId);
         Member member = userDetails.getMember();
 
+        if (member.getDeletedAt() != null) {
+            throw new BadRequestException(utils.getMessage("DeletedAt.member")); // 키로 메시지 처리
+        }
+
         Date date = new Date(new Date().getTime() + properties.getValidTime() * 1000);
 
         return Jwts.builder()
@@ -75,6 +80,10 @@ public class TokenService {
 
     public String create(SocialChannel channel, String token){
         Member member = repository.findBySocialChannelAndSocialToken(channel, token).orElseThrow(MemberNotFoundException::new);
+
+        if (member.getDeletedAt() != null) {
+            throw new BadRequestException(utils.getMessage("DeletedAt.member")); // 키로 메시지 처리
+        }
 
         return create(member.getUserId());
     }
