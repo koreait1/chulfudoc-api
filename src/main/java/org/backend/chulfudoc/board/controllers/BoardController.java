@@ -165,9 +165,10 @@ public class BoardController {
     @Operation(summary = "사용자 별 목록 조회, 여러 게시판의 통합 검색", method = "GET", description = "/api/v1/mypage/search : 해당 유저가 쓴 모든 글 찾기")
     @ApiResponse(responseCode = "200", description = "게시글 목록과 페이징을 위한 데이터가 함께 출력")
     @Parameter(name="puuid", required = true, description = "사용자 고유 식별 번호")
+    @Parameter(name="isLogin", required = false, description = "로그인 여부")
     @GetMapping("/mypage/search")
-    public ListData<BoardData> getMyList(@RequestParam("puuid") String puuid, @ModelAttribute BoardSearch search, Model model) {
-        if (!memberUtil.isLogin())
+    public ListData<BoardData> getMyList(@RequestParam("puuid") String puuid,@RequestParam("isLogin") boolean isLogin, @ModelAttribute BoardSearch search) {
+        if (!isLogin)
             return new ListData<>();
         return infoService.getMyList(puuid,search);
     }
