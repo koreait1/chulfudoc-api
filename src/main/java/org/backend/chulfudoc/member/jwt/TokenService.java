@@ -121,7 +121,7 @@ public class TokenService {
     public Authentication authenticate(ServletRequest request) {
         HttpServletRequest req = (HttpServletRequest) request;
         String token = req.getHeader("Authorization");
-        if (!StringUtils.hasText(token)) {
+        if (!StringUtils.hasText(token) || !token.startsWith("Bearer ")) {
             return null;
         }
 
