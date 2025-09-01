@@ -1,7 +1,7 @@
 # 프로젝트 : [철푸닥](https://chulfudoc.xyz)
 <div align="center">
   <a href="https://chulfudoc.xyz">
-    <img src="https://github.com/koreait1/chulfudoc-api/tree/master/img/logo.png" alt="철푸닥" width="500"/>
+    <img src="https://raw.githubusercontent.com/koreait1/chulfudoc-api/master/img/logo.png" alt="철푸닥" width="500"/>
   </a><br />
 </div>
 
