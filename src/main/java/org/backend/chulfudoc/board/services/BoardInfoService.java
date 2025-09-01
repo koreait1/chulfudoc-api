@@ -116,8 +116,8 @@ public class BoardInfoService {
 
         if (!StringUtils.hasText(puuid)){
             Member me = memberUtil.getMember();
-            if (me != null && org.springframework.util.StringUtils.hasText(me.getPUUID())) {
-                puuid = me.getPUUID();
+            if (me != null && org.springframework.util.StringUtils.hasText(me.getPuuid())) {
+                puuid = me.getPuuid();
             } else {
                 int range = 10, total = 0;
                 Pagination pagination = new Pagination(page, total, range, limit, request);
@@ -130,7 +130,7 @@ public class BoardInfoService {
         QBoardData boardData = QBoardData.boardData;
         BooleanBuilder andBuilder = new BooleanBuilder();
 
-        andBuilder.and(boardData.member.PUUID.eq(puuid));
+        andBuilder.and(boardData.member.puuid.eq(puuid));
 
         /* 검색 조건 처리 E */
 
@@ -308,7 +308,7 @@ public class BoardInfoService {
         } else { // 회원 게시글
             Member boardMember = item.getMember(); // 게시글을 작성한 회원
             Member member = memberUtil.getMember(); // 로그인한 회원
-            item.setMine(memberUtil.isLogin() && boardMember.getPUUID().equals(member.getPUUID())); // 로그인한 회원 정보와 게시글 작성 회원 정보가 일치
+            item.setMine(memberUtil.isLogin() && boardMember.getPuuid().equals(member.getPuuid())); // 로그인한 회원 정보와 게시글 작성 회원 정보가 일치
             if (!memberUtil.isAdmin()) {
                 editable = item.isMine();
             }
