@@ -104,11 +104,6 @@ public class BoardInfoService {
      * @return
      */
     public ListData<BoardData> getMyList(String puuid, BoardSearch search) {
-        if (!memberUtil.isLogin()) {
-            int page = 1, limit = 20, range = 10, total = 0;
-            Pagination pagination = new Pagination(page, total, range, limit, request);
-            return new ListData<>(java.util.Collections.emptyList(), pagination);
-        }
         int page = Math.max(search.getPage(), 1);
         int limit = search.getLimit();
         limit = limit < 1 ? 20 : limit;
