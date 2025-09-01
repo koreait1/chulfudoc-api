@@ -4,8 +4,8 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import org.backend.chulfudoc.global.exceptions.BadRequestException;
 import org.backend.chulfudoc.global.exceptions.UnAuthorizedException;
 import org.backend.chulfudoc.global.libs.Utils;
 import org.backend.chulfudoc.member.MemberInfo;
@@ -64,7 +64,7 @@ public class TokenService {
         Member member = userDetails.getMember();
 
         if (member.getDeletedAt() != null) {
-            throw new BadRequestException(utils.getMessage("DeletedAt.member")); // 키로 메시지 처리
+            throw new UnAuthorizedException("탈퇴한 계정입니다.");
         }
 
         Date date = new Date(new Date().getTime() + properties.getValidTime() * 1000);
@@ -80,10 +80,6 @@ public class TokenService {
 
     public String create(SocialChannel channel, String token){
         Member member = repository.findBySocialChannelAndSocialToken(channel, token).orElseThrow(MemberNotFoundException::new);
-
-        if (member.getDeletedAt() != null) {
-            throw new BadRequestException(utils.getMessage("DeletedAt.member")); // 키로 메시지 처리
-        }
 
         return create(member.getUserId());
     }
@@ -130,6 +126,18 @@ public class TokenService {
     public Authentication authenticate(ServletRequest request) {
         HttpServletRequest req = (HttpServletRequest) request;
         String token = req.getHeader("Authorization");
+
+        if (!StringUtils.hasText(token) || !token.startsWith("Bearer ")) {
+            if (req.getCookies() != null) {
+                for (Cookie cookie : req.getCookies()) {
+                    if ("token".equals(cookie.getName()) && StringUtils.hasText(cookie.getValue())) {
+                        token = "Bearer " + cookie.getValue(); // 헤더처럼 맞춰줌
+                        break;
+                    }
+                }
+            }
+        }
+
         if (!StringUtils.hasText(token) || !token.startsWith("Bearer ")) {
             return null;
         }

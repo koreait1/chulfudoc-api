@@ -189,7 +189,6 @@ public class MemberController {
     // 회원탈퇴
     @Operation(summary = "회원 탈퇴", description = "현재 로그인 회원의 deletedAt을 현재 시간으로 설정")
     @ApiResponse(responseCode = "200", description = "탈퇴 처리 완료")
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete")
     public ResponseEntity<?> delete() {
         memberDeleteService.deleteCurrentMember();

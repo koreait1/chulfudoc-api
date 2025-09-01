@@ -6,6 +6,7 @@ import org.backend.chulfudoc.member.entities.Member;
 import org.backend.chulfudoc.member.jwt.TokenService;
 import org.backend.chulfudoc.member.libs.MemberUtil;
 import org.backend.chulfudoc.member.repositories.MemberRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,24 +18,24 @@ public class MemberDeleteService {
 
     private final MemberUtil memberUtil;
     private final MemberRepository memberRepository;
-    private final TokenService tokenService;
+    private final TokenService tokenService; // 프로젝트에 이미 존재(필요시 주입만)
 
-    /**
-     * 현재 로그인한 회원을 삭제
-     * - 삭제 시각 기록 후 저장
-     */
+    //현재 로그인한 회원 삭제
     @Transactional
     public void deleteCurrentMember() {
-        Member me = memberUtil.getMember();
-        if (me == null) {
+        Member member = memberUtil.getMember();
+        if (member == null) {
             throw new BadRequestException("인증이 필요합니다.");
         }
-        if (me.getDeletedAt() != null) {
+        //이미 탈퇴되어 있으면 예외
+        if (member.getDeletedAt() != null) {
             throw new BadRequestException("이미 탈퇴 처리된 계정입니다.");
         }
 
         // 회원 탈퇴 처리
-        me.setDeletedAt(LocalDateTime.now());
-        memberRepository.saveAndFlush(me);
+        member.setDeletedAt(LocalDateTime.now());
+        memberRepository.saveAndFlush(member);
+
+        SecurityContextHolder.clearContext();
     }
 }
