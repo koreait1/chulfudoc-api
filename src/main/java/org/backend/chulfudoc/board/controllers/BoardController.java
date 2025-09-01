@@ -29,13 +29,17 @@ import org.backend.chulfudoc.member.services.MemberSessionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -141,13 +145,19 @@ public class BoardController {
     @ApiResponse(responseCode = "200", description = "게시글 목록과 페이징을 위한 데이터가 함께 출력")
     @Parameter(name="bid", required = true, in = ParameterIn.PATH, description = "게시판 아이디")
     @GetMapping({"/list/{bid}", "/search"})
-    public ListData<BoardData> getList(@PathVariable(name="bid", required = false) String bid, @ModelAttribute BoardSearch search, Model model) {
-        commonProcess(bid, "list", model);
-
+    public ListData<BoardData> getList(@PathVariable(name="bid", required = false) String bid,
+                                       @ModelAttribute BoardSearch search, Model model) {
         if (StringUtils.hasText(bid)) {
+            commonProcess(bid, "list", model);
             search.setBid(List.of(bid));
+        } else {
+            if (search.getBid() != null && !search.getBid().isEmpty()) {
+                var allowed = search.getBid().stream().filter(b -> {
+                    try { authService.check("list", b); return true; } catch (Exception e) { return false; }
+                }).toList();
+                search.setBid(allowed);
+            }
         }
-
         return infoService.getList(search);
     }
 
@@ -155,9 +165,10 @@ public class BoardController {
     @Operation(summary = "사용자 별 목록 조회, 여러 게시판의 통합 검색", method = "GET", description = "/api/v1/mypage/search : 해당 유저가 쓴 모든 글 찾기")
     @ApiResponse(responseCode = "200", description = "게시글 목록과 페이징을 위한 데이터가 함께 출력")
     @Parameter(name="puuid", required = true, description = "사용자 고유 식별 번호")
+    @Parameter(name="isLogin", required = false, description = "로그인 여부")
     @GetMapping("/mypage/search")
-    public ListData<BoardData> getMyList(@RequestParam("puuid") String puuid, @ModelAttribute BoardSearch search, Model model) {
-        if (!memberUtil.isLogin())
+    public ListData<BoardData> getMyList(@RequestParam("puuid") String puuid,@RequestParam("isLogin") boolean isLogin, @ModelAttribute BoardSearch search) {
+        if (!isLogin)
             return new ListData<>();
         return infoService.getMyList(puuid,search);
     }
@@ -355,4 +366,42 @@ public class BoardController {
         model.addAttribute("board", board);
         model.addAttribute("mode", mode);
     }
+
+    @GetMapping("/list/all")
+    public List<Map<String, String>> listAllForTabs() {
+        CommonSearch search = new CommonSearch();
+        search.setPage(1);
+        search.setLimit(100000);
+
+        List<Board> all = configInfoService.getList(search, false).getItems();
+
+        final boolean isLogin = memberUtil.isLogin();
+        boolean adminTmp = false;
+        if (isLogin) {
+            try {
+                String auth = String.valueOf(memberUtil.getMember().getAuthority()).toUpperCase();
+                adminTmp = auth.contains("ADMIN");
+            } catch (Exception ignore) {}
+        }
+        final boolean isAdmin = adminTmp;
+
+        return all.stream()
+                .filter(b -> {
+                    if (isAdmin) return true; // 관리자면 전부
+                    String la = String.valueOf(
+                            b.getListAuthority() == null ? "ALL" : b.getListAuthority()
+                    ).trim().toUpperCase();
+
+                    if (!isLogin) return "ALL".equals(la);
+                    return "ALL".equals(la) || "MEMBER".equals(la);
+                })
+                .map(b -> {
+                    Map<String, String> m = new HashMap<>();
+                    m.put("bid", b.getBid());
+                    m.put("name", b.getName() != null ? b.getName() : b.getBid());
+                    return m;
+                })
+                .collect(Collectors.toList());
+    }
+
 }
