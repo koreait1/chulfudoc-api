@@ -35,7 +35,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -141,13 +144,19 @@ public class BoardController {
     @ApiResponse(responseCode = "200", description = "게시글 목록과 페이징을 위한 데이터가 함께 출력")
     @Parameter(name="bid", required = true, in = ParameterIn.PATH, description = "게시판 아이디")
     @GetMapping({"/list/{bid}", "/search"})
-    public ListData<BoardData> getList(@PathVariable(name="bid", required = false) String bid, @ModelAttribute BoardSearch search, Model model) {
-        commonProcess(bid, "list", model);
-
+    public ListData<BoardData> getList(@PathVariable(name="bid", required = false) String bid,
+                                       @ModelAttribute BoardSearch search, Model model) {
         if (StringUtils.hasText(bid)) {
+            commonProcess(bid, "list", model);
             search.setBid(List.of(bid));
+        } else {
+            if (search.getBid() != null && !search.getBid().isEmpty()) {
+                var allowed = search.getBid().stream().filter(b -> {
+                    try { authService.check("list", b); return true; } catch (Exception e) { return false; }
+                }).toList();
+                search.setBid(allowed);
+            }
         }
-
         return infoService.getList(search);
     }
 
@@ -355,4 +364,42 @@ public class BoardController {
         model.addAttribute("board", board);
         model.addAttribute("mode", mode);
     }
+
+    @GetMapping("/list/all")
+    public List<Map<String, String>> listAllForTabs() {
+        CommonSearch search = new CommonSearch();
+        search.setPage(1);
+        search.setLimit(100000);
+
+        List<Board> all = configInfoService.getList(search, false).getItems();
+
+        final boolean isLogin = memberUtil.isLogin();
+        boolean adminTmp = false;
+        if (isLogin) {
+            try {
+                String auth = String.valueOf(memberUtil.getMember().getAuthority()).toUpperCase();
+                adminTmp = auth.contains("ADMIN");
+            } catch (Exception ignore) {}
+        }
+        final boolean isAdmin = adminTmp;
+
+        return all.stream()
+                .filter(b -> {
+                    if (isAdmin) return true; // 관리자면 전부
+                    String la = String.valueOf(
+                            b.getListAuthority() == null ? "ALL" : b.getListAuthority()
+                    ).trim().toUpperCase();
+
+                    if (!isLogin) return "ALL".equals(la);
+                    return "ALL".equals(la) || "MEMBER".equals(la);
+                })
+                .map(b -> {
+                    Map<String, String> m = new HashMap<>();
+                    m.put("bid", b.getBid());
+                    m.put("name", b.getName() != null ? b.getName() : b.getBid());
+                    return m;
+                })
+                .collect(Collectors.toList());
+    }
+
 }
