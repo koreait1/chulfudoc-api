@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @WithSecurityContext(factory = MockSecurityContextFactory.class)
 public @interface MockMember {
 
-    String PUUID() default "sdfs-sdfs-qwer-wert";
+    String puuid() default "sdfs-sdfs-qwer-wert";
     String userID() default "user01";
     String email() default "testUser@test.org";
     String password() default "_aA123456";

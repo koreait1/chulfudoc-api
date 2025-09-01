@@ -37,13 +37,13 @@ public class MemberUtil {
     /**
      * 회원 구분 해시
      *  비회원 : 요청헤더 - User-Hash가 있으면 그걸로 대체
-     *  회원 : PUUID
+     *  회원 : puuid
      * @return
      */
     public String getUserHash() {
         String userHash = request.getHeader("User-Hash");
         userHash = StringUtils.hasText(userHash) ? userHash : UUID.randomUUID().toString();
 
-        return isLogin() ? String.valueOf(getMember().getPUUID()) : String.valueOf(userHash);
+        return isLogin() ? String.valueOf(getMember().getPuuid()) : String.valueOf(userHash);
     }
 }
