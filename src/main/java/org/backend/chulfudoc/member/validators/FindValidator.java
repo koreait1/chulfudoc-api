@@ -1,4 +1,4 @@
-package org.backend.chulfudoc.member.services;
+package org.backend.chulfudoc.member.validators;
 
 import lombok.RequiredArgsConstructor;
 import org.backend.chulfudoc.member.controllers.RequestFindId;
