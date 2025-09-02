@@ -28,6 +28,8 @@ ENV REDIS_PORT=**
 ENV JWT_SECRET=**
 ENV JWT_VALIDTIME=**
 
-ENTRYPOINT ["java","-Ddb.password=${DB_PASSWORD}","-Ddb.url=${DB_URL}","-Ddb.username=${DB_USERNAME}","-Dspring.jpa.hibernate.ddl-auto=${DDL_AUTO}","-Dfile.path=${FILE_PATH}","-Dfile.url=${FILE_URL}","-Djwt.secret=${JWT_SECRET}","-Djwt.validTime=${JWT_VALIDTIME}","-Dredis.host=${REDIS_HOST}","-Dredis.port=${REDIS_PORT}","-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-Dmail.username=${MAIL_USERNAME}", "-Dmail.password=${MAIL_PASSWORD}" , "-jar","app.jar"]
+ENV CORS_ALLOWEDORIGIN=**
+
+ENTRYPOINT ["java","-Ddb.password=${DB_PASSWORD}","-Ddb.url=${DB_URL}","-Ddb.username=${DB_USERNAME}","-Dspring.jpa.hibernate.ddl-auto=${DDL_AUTO}","-Dfile.path=${FILE_PATH}","-Dfile.url=${FILE_URL}","-Djwt.secret=${JWT_SECRET}","-Djwt.validTime=${JWT_VALIDTIME}","-Dredis.host=${REDIS_HOST}","-Dredis.port=${REDIS_PORT}","-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-Dmail.username=${MAIL_USERNAME}", "-Dmail.password=${MAIL_PASSWORD}" , "-Dcors.allowedorigin=${CORS_ALLOWEDORIGIN}","-jar","app.jar"]
 
 EXPOSE ${PORT}

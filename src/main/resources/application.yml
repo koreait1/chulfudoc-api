@@ -1,6 +1,9 @@
 server:
   port: 4000 # 포트번호 추천받아요
 
+cors:
+  allowed-origin: ${cors.allowedorigin}
+
 spring:
   # 이메일
   mail:
